@@ -414,6 +414,26 @@
         empty.textContent = 'New ' + cat + ' pieces arrive soon.';
       } else if (empty) empty.remove();
     }));
+    // collections.html?cat=… opens with that category chosen (the homepage category tiles link here)
+    const wanted = norm(new URLSearchParams(location.search).get('cat'));
+    const start = wanted && chips.find((c) => label(c) === wanted);
+    if (start) start.click();
+  }
+
+  // Homepage category tiles: each opens the collection filtered to its category
+  const TILE_CATS = { 'blazers & tailoring': 'tailored outerwear', jackets: 'tailored outerwear', shirts: 'oversized shirts', pants: 'wide trousers', hoodies: 'knitwear', 'instock collections': '' };
+  function initCategoryTiles() {
+    $$('.bento-card').forEach((card) => {
+      const alt = norm(($('img', card) || {}).alt);
+      if (!(alt in TILE_CATS)) return;
+      const href = 'collections.html' + (TILE_CATS[alt] ? '?cat=' + encodeURIComponent(TILE_CATS[alt]) : '');
+      const name = ($('h3', card) || $('span.font-label-caps', card) || {}).textContent || alt;
+      card.setAttribute('role', 'link');
+      card.tabIndex = 0;
+      card.setAttribute('aria-label', 'Shop ' + name.trim());
+      card.addEventListener('click', () => { location.href = href; });
+      card.addEventListener('keydown', (e) => { if (e.key === 'Enter') location.href = href; });
+    });
   }
 
   // Remaining buttons on the designed pages, matched by their text or icon
@@ -1118,6 +1138,7 @@
   fillCatalog();
   initCards();
   initFilters();
+  initCategoryTiles();
   initButtons();
   initFaq();
   initForms();

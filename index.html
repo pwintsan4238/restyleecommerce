@@ -258,74 +258,43 @@
 </nav>
 </header>
 <main id="main">
-<!-- Hero Section -->
-<section class="relative w-full overflow-hidden min-h-screen pt-20 curatorial-bg flex items-center">
-<!-- Massive Background Text -->
-<div class="absolute right-20 top-1/2 -translate-y-1/2 select-none pointer-events-none parallax-element" data-speed="0.1">
-<span class="vertical-text font-display-lg text-[220px] leading-none debossed-text">R E S T Y L E</span>
+<!-- Hero (rebuilt: two columns on desktop, stacked on phones) -->
+<section class="rs-hero curatorial-bg relative overflow-hidden" aria-labelledby="hero-title">
+<div class="relative max-w-container-max mx-auto px-5 md:px-10 lg:px-16 pt-24 md:pt-32 lg:pt-24 pb-10 lg:pb-14 grid lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-6 items-center lg:min-h-[calc(100dvh-5rem)]">
+<div class="lg:col-span-6 xl:col-span-5 relative z-10 reveal-up active">
+<p class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 border border-black/5 backdrop-blur font-label-caps text-[11px] tracking-[0.25em] text-primary mb-6 md:mb-8"><span class="w-1.5 h-1.5 rounded-full bg-[#6f8569]" aria-hidden="true"></span>RESTYLE VIBES</p>
+<h1 id="hero-title" class="font-display-lg font-light text-primary text-[clamp(3.25rem,11vw,6.5rem)] leading-[0.92] tracking-tight">DEFINE YOUR<br/><em class="font-normal">STYLE.</em></h1>
+<p class="mt-6 md:mt-8 max-w-md text-base md:text-lg leading-relaxed text-on-surface-variant">Inspired by the city. Designed for modern lives. Meticulously crafted tailoring for the discerning individual.</p>
+<div class="mt-8 md:mt-10 flex flex-col sm:flex-row gap-3">
+<a href="collections.html" class="rs-btn-primary">SHOP NOW <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span></a>
+<a href="#new-arrivals" class="rs-btn-ghost">NEW ARRIVALS</a>
 </div>
-<div class="container mx-auto px-margin-desktop max-w-container-max relative h-[85vh] flex flex-col md:flex-row items-center justify-between">
-<!-- Left Content Block -->
-<div class="w-full md:w-5/12 z-40 reveal-up active" style="transition-delay: 0.1s;">
-<span class="inline-block px-4 py-1.5 bg-sage-green/10 text-sage-green font-label-caps text-[10px] tracking-[0.25em] mb-8 rounded-full">RESTYLE VIBES</span>
-<h1 class="font-display-lg text-[64px] md:text-[84px] text-primary mb-8 leading-[0.95] tracking-tight">DEFINE YOUR<br/>STYLE.</h1>
-<p class="font-body-md text-primary/70 mb-12 max-w-sm text-lg leading-relaxed">Inspired by the city. Designed for modern lives. Meticulously crafted tailoring for the discerning individual.</p>
-<!-- Button Group -->
-<div class="flex flex-wrap items-center gap-4 mt-8">
-<a class="bg-primary text-on-primary font-label-caps text-[11px] tracking-[0.25em] px-10 py-4 flex items-center gap-3 transition-transform hover:-translate-y-0.5 active:translate-y-0 rounded-lg" href="collections.html">
-                            SHOP NOW
-                            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+<dl class="hidden sm:grid mt-10 md:mt-12 grid-cols-3 max-w-md border-t border-black/10 pt-6 gap-4">
+<div><dt class="font-label-caps text-[10px] tracking-[0.2em] text-on-surface-variant">SIZES</dt><dd class="font-display-lg text-xl md:text-2xl mt-1">S – L</dd></div>
+<div><dt class="font-label-caps text-[10px] tracking-[0.2em] text-on-surface-variant">PAY WITH</dt><dd class="font-display-lg text-xl md:text-2xl mt-1">KBZ Pay</dd></div>
+<div><dt class="font-label-caps text-[10px] tracking-[0.2em] text-on-surface-variant">ATELIER</dt><dd class="font-display-lg text-xl md:text-2xl mt-1">Yangon</dd></div>
+</dl>
+</div>
+<div class="lg:col-span-6 xl:col-span-7 relative reveal-up active" style="transition-delay:.15s">
+<div class="rs-hero-stage">
+<div class="rs-hero-arch" aria-hidden="true"></div>
+<img class="rs-hero-model" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBG2k4lowAPvgkIVVtg9_6NUZ7kNABQdCfbO4nZIDUMyXiagVtpTZRBvaqJbj9E7mWGTEx0sszXKfL4koTbOb2rTLKNwAAKi4Z9UoaSk4EgTe7d3IfSAkMxvN6MqQXavdOrLxKqWnC4VvDYNjJQvxnCL41MNdHTLwUPEA0f_SRYpyvGyD9xPtBw5PyPjRd-Zv93L-9W3ByBSVn1scFQdcXzDXQpBs6othuTmAi3JT0L4yzg_ZavkX3d62-NLdBd_ymI17DfTZWsK8Tg3w" alt="Model wearing a black RESTYLE jacket and wide tailored trousers" width="187" height="512" fetchpriority="high"/>
+<a href="about.html" class="rs-hero-card group">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMCjKyB_nZQPyfU4uBO62OFuQbItW-RtJqXzbty_Qg91J4IByOJPxYMCMZH1vp5rb4Dm6qlUcduGu4mt-xC2efVJYS2lN5_ji3Kk0eQOWrlS9gjAiQTju1mv_xqowNBbRcq1zLf109l9FsJ9YuaynoutUUi5Kl1d8356EqMYLqto5gZnRnD9Xoa0wbVIC0bBVorYfAABdjEfE0GGDsX2zLiYPzuIYewvWwO--uxqDr4uHnV1qg6b4uUKpghOKa-z6SAmpESZAxJo0Kow" alt="" width="56" height="72" class="w-14 h-[72px] object-cover rounded-lg shrink-0" loading="lazy"/>
+<span class="min-w-0"><span class="block font-label-caps text-[10px] tracking-[0.2em] text-on-surface-variant">BEHIND THE SEAMS</span>
+<span class="block font-display-lg text-lg leading-tight mt-1">Atelier Craftsmanship</span>
+<span class="mt-1 inline-flex items-center gap-1 text-xs font-semibold">Discover <span class="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-0.5" aria-hidden="true">arrow_forward</span></span></span>
 </a>
-<a class="bg-white/10 backdrop-blur-md border text-primary font-label-caps text-[11px] tracking-[0.25em] px-10 py-4 transition-all hover:bg-white/20 hover:border-white/60 border-primary border-black rounded-lg" href="collections.html">
-                            COLLECTION
-                        </a>
-</div>
-</div>
-<!-- Center Model -->
-<div class="absolute inset-0 flex items-center justify-center pointer-events-none md:pointer-events-auto">
-<div class="relative h-full aspect-[2/3] reveal-up active parallax-element" data-speed="0.05" style="transition-delay: 0.3s;">
-<!-- Ambient Shadow -->
-<div class="absolute bottom-12 -translate-x-1/2 w-64 h-12 bg-black/10 blur-[40px] rounded-[100%] opacity-60"></div>
-<!-- Model Image -->
-<img alt="Full-length model in dark tailoring" class="h-full w-full object-contain relative z-10 filter drop-shadow-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBG2k4lowAPvgkIVVtg9_6NUZ7kNABQdCfbO4nZIDUMyXiagVtpTZRBvaqJbj9E7mWGTEx0sszXKfL4koTbOb2rTLKNwAAKi4Z9UoaSk4EgTe7d3IfSAkMxvN6MqQXavdOrLxKqWnC4VvDYNjJQvxnCL41MNdHTLwUPEA0f_SRYpyvGyD9xPtBw5PyPjRd-Zv93L-9W3ByBSVn1scFQdcXzDXQpBs6othuTmAi3JT0L4yzg_ZavkX3d62-NLdBd_ymI17DfTZWsK8Tg3w"/>
-</div>
-</div>
-<!-- Bottom-Right Video Card -->
-<div class="absolute right-8 md:right-16 z-30 w-80 reveal-up active bottom-48 md:bottom-40" style="transition-delay: 0.5s;">
-<div class="bg-white/40 backdrop-blur-md p-5 rounded-2xl shadow-sm border border-white/40 parallax-element" data-speed="-0.05">
-<div class="relative aspect-[4/5] overflow-hidden rounded-xl group shimmer-video">
-<img class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMCjKyB_nZQPyfU4uBO62OFuQbItW-RtJqXzbty_Qg91J4IByOJPxYMCMZH1vp5rb4Dm6qlUcduGu4mt-xC2efVJYS2lN5_ji3Kk0eQOWrlS9gjAiQTju1mv_xqowNBbRcq1zLf109l9FsJ9YuaynoutUUi5Kl1d8356EqMYLqto5gZnRnD9Xoa0wbVIC0bBVorYfAABdjEfE0GGDsX2zLiYPzuIYewvWwO--uxqDr4uHnV1qg6b4uUKpghOKa-z6SAmpESZAxJo0Kow"/>
-<div class="absolute inset-0 flex items-center justify-center">
-<button class="w-12 h-12 rounded-full bg-surface/40 backdrop-blur-md flex items-center justify-center text-primary border border-white/30 transition-transform hover:scale-110"> <span class="material-symbols-outlined" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span> </button>
-</div>
-</div>
-<div class="mt-5 px-1">
-<p class="font-label-caps text-[9px] tracking-[0.25em] text-primary/40 mb-1">BEHIND THE SEAMS</p>
-<h4 class="font-display-lg text-xl text-primary">Atelier Craftsmanship</h4>
 </div>
 </div>
 </div>
-</div>
-<!-- Trust Bar -->
-<div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-5xl z-20">
-<div class="bg-white/30 backdrop-blur-xl border border-white/20 py-8 px-4 sm:px-8 grid grid-cols-2 md:grid-cols-4 gap-8 rounded-2xl" style="border-color: rgb(96, 94, 89);">
-<div class="flex flex-col items-center text-center gap-2">
-<span class="material-symbols-outlined text-primary text-[28px]">local_shipping</span>
-<p class="font-label-caps text-[11px] tracking-widest text-primary">GLOBAL SHIPPING</p>
-</div>
-<div class="flex flex-col items-center text-center gap-2">
-<span class="material-symbols-outlined text-primary text-[28px]">verified</span>
-<p class="font-label-caps text-[11px] tracking-widest text-primary">BESPOKE QUALITY</p>
-</div>
-<div class="flex flex-col items-center text-center gap-2">
-<span class="material-symbols-outlined text-primary text-[28px]">support_agent</span>
-<p class="font-label-caps text-[11px] tracking-widest text-primary">24/7 SUPPORT</p>
-</div>
-<div class="flex flex-col items-center text-center gap-2">
-<span class="material-symbols-outlined text-primary text-[28px]">lock</span>
-<p class="font-label-caps text-[11px] tracking-widest text-primary">SECURE CHECKOUT</p>
-</div>
-</div>
+<div class="relative max-w-container-max mx-auto px-5 md:px-10 lg:px-16 pb-14 md:pb-20">
+<ul class="rs-trust" aria-label="Why shop with RESTYLE">
+<li><span class="material-symbols-outlined" aria-hidden="true">local_shipping</span>Global shipping</li>
+<li><span class="material-symbols-outlined" aria-hidden="true">verified</span>Bespoke quality</li>
+<li><span class="material-symbols-outlined" aria-hidden="true">support_agent</span>24/7 support</li>
+<li><span class="material-symbols-outlined" aria-hidden="true">lock</span>Secure checkout</li>
+</ul>
 </div>
 </section>
 <!-- Product Categories Asymmetrical Bento Section -->
@@ -348,7 +317,7 @@
 <div class="absolute bottom-6 left-6 right-6 p-6 bg-white/50 backdrop-blur-md border border-white/70 rounded-lg flex justify-between items-center transition-transform duration-500 group-hover:-translate-y-1">
 <div>
 <h3 class="font-display-lg text-headline-sm text-primary">Blazer</h3>
-<p class="font-label-md text-on-surface-variant opacity-70">2 Items</p>
+<p class="font-label-md text-on-surface-variant">Shop the edit</p>
 </div>
 <div class="cta-circle w-12 h-12 rounded-full flex items-center justify-center border border-black/5 bg-white/80 transition-colors duration-300 group-hover:bg-primary group-hover:text-white">
 <span class="material-symbols-outlined text-[20px]">north_east</span>
@@ -359,35 +328,35 @@
 <div class="bento-card md:col-span-2 md:row-span-1 group relative overflow-hidden cursor-pointer fade-in-up delay-2 active rounded-lg">
 <img alt="Instock Collections" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDV93mbTdgAw90RnNk7c9lOntO_ZmY19RDFcmf0lz0IsJwGU8M4Fr4mGprcdac2LTijOCQjEE46R68tEjuqzwJ18AZW353Y8vWsOu7HlHNaMZUOiYDFcD_31d62cGIcEYYERqWWlzXricvhq3pA4uWzsxrpYjB1X0uz0NhsuGcjHrcOLPB6biSYPJej2ZIC_dJbGZ2up-aEfOdUv2meKyxf7toBz2ARpSlDWEWWKmO8Pd6w-xszIAZ2t6xl4RngeRrBye_H4OVyIxmkKg"/>
 <div class="absolute bottom-6 right-6 bg-white/50 backdrop-blur-md border border-white/70 px-5 py-3 rounded-lg">
-<span class="font-label-caps text-[12px] text-primary">Instock Collections — 33 Items</span>
+<span class="font-label-caps text-[12px] text-primary">Instock Collections</span>
 </div>
 </div>
 <!-- 3. Standard Square (Middle-Right, 1x1) -->
 <div class="bento-card md:col-span-1 md:row-span-1 group relative overflow-hidden cursor-pointer fade-in-up delay-3 active rounded-lg">
 <img alt="Jackets" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEX_ASNKpk0-3UBPFq-YJ-qIEvktIq96vUKOC93U3GzcnEmF4HV5RG5URGXEIZPup06iBrBueN7-5rKKzvEIMEdjv0PBHuJhzDixcqgsHQsdAtwtF73uBit6H2ZEn78q9Zwk93W155MzDfvP86x83vcFONOq0IG3K1To6Br522xNNutk7Cg0d_mQGinNt2rsqH5ZBvNASFSOuOvxXEs_SKize2SdttqdkYLk2POciyAldTX7PIQO19KeJQqeTOkRhNTMuk9AarmIPljw"/>
 <div class="absolute bottom-4 left-4 right-4 bg-white/50 backdrop-blur-md border border-white/70 px-4 py-2 rounded-lg text-center">
-<span class="font-label-caps text-[11px] text-primary">Jackets — 34 Items</span>
+<span class="font-label-caps text-[11px] text-primary">Jackets</span>
 </div>
 </div>
 <!-- 4. Standard Square (Middle-Right-End, 1x1) -->
 <div class="bento-card md:col-span-1 md:row-span-1 group relative overflow-hidden cursor-pointer fade-in-up delay-4 active rounded-lg">
 <img alt="Shirts" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9lGxcQyHzBOUg238ddH4CBzoKmCQU4GoQ6U0fefSqHoRvkzBHI1ew19rC0GwIiqJ_hI_aqIHWHlSPEjB9yo_AI3sZxroZHSdNcUy4Cle7xkQZNBWfUIZdZCaYCx0KJar5KcCb97akiYRCgtoAZdF_qhSPuy5-dLciImZxmGvBMpWtRcCpqdPab-Ha3qpKS4lgBhp37gCbaAbTltiBDPd7sugA29JIbP-MByd9HcR8GVNImbxd7v0laASB4V6Ky-eERGsE-jNnF9ZG2Q"/>
 <div class="absolute bottom-4 left-4 right-4 bg-white/50 backdrop-blur-md border border-white/70 px-4 py-2 rounded-lg text-center">
-<span class="font-label-caps text-[11px] text-primary">Shirts — 16 Items</span>
+<span class="font-label-caps text-[11px] text-primary">Shirts</span>
 </div>
 </div>
 <!-- 5. Standard Square (Bottom-Left, 1x1) -->
 <div class="bento-card md:col-span-1 md:row-span-1 group relative overflow-hidden cursor-pointer fade-in-up delay-5 active rounded-lg">
 <img alt="Pants" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3hpt2XNF1DeEH_9sEWi8yt9knpvbPoTD2O3VMLQz3hShNcpNK_OWePg95LwvdBmN5GyFtlvGeh8uZGG6UX9BkCKhlO5tDk9UNFmSfh0dh2gZttkOBD9sn7gfDBuURJ_pzlnJGxauHKxQW8qvIdrTNQqKhw_0jyIDl-ObEy98KOFBjQncaEVe70yjYJVybs13N-0Gs4Dhm_Rjxvl99Y0UzJ2laJ2q_wmmq6SKDZdDf2T51MdZd24ZJrpqboTYUS2hQOA"/>
 <div class="absolute bottom-4 left-4 right-4 bg-white/50 backdrop-blur-md border border-white/70 px-4 py-2 rounded-lg text-center">
-<span class="font-label-caps text-[11px] text-primary">Pants — 15 Items</span>
+<span class="font-label-caps text-[11px] text-primary">Pants</span>
 </div>
 </div>
 <!-- 6. Standard Square (Bottom-Center-Left, 1x1) -->
 <div class="bento-card md:col-span-1 md:row-span-1 group relative overflow-hidden cursor-pointer fade-in-up delay-6 active rounded-lg">
 <img alt="Hoodies" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmD1PZauA6niLENv9FQS3NVs670Ag8frDiidPTWkqP_Ct2nF5MX51ZMjRx0kfz7p-_O_0h67bBUc4O0A-Fj4VjfnlMf68bs37mKHCdHGEQQCcmX-fUbxf05zEifB5IEP50uarmcvGnVZT0J20cM-9P2NuC34KhEHyNLR_11oDB3jMTfcfsLFNOcsYr3oIdDyh7QtCeNNR1NjTCxfcdZN5b2QL2pIwoA4duvADpqhbi0iE9_PAuM93flFuAJFWMQW-dq4FBRecBjDnFoQ"/>
 <div class="absolute bottom-4 left-4 right-4 bg-white/50 backdrop-blur-md border border-white/70 px-4 py-2 rounded-lg text-center">
-<span class="font-label-caps text-[11px] text-primary">Hoodies — 1 Item</span>
+<span class="font-label-caps text-[11px] text-primary">Hoodies</span>
 </div>
 </div>
 <!-- 7. Editorial Story Card (Bottom-Right, 2x1) -->
@@ -407,21 +376,29 @@
 </div>
 </section>
 </section>
-<!-- Everyday Collective Editorial Campaign -->
-<section class="bg-surface-bright relative w-full overflow-hidden" style="background-color: rgb(239, 236, 230);">
-<div class="relative w-full aspect-[21/9] md:aspect-[2.4/1] group overflow-hidden">
-<!-- Banner Image with Hover Zoom -->
-<img alt="Everyday Collective" class="w-full h-full object-cover transition-transform duration-[3s] ease-out group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAT0tjkE7nYwCMAo1mS73H2nGqaqHmcJOESgI5AdMxo93TYvK4H1AwG-omnGjk6RgCUFPnkrbnTbpnG-Mlh0xzbaGFS_rQfRr4Yr0icUVCiQ8zWLJ_vN05vaeLXCSUeuhx7YDzGYAuzxQtP0wR8zefa0iagniDhNCMJ_07A6zAHJVABsXEpriqW1EgruzqFM5uv-FSQP49H2cMoGPH1_-_aT0E7zYoNR1e2EktHpPboczMeW50z6tNg6AwyZU2PHWnJ7p6iFRKPpznPZg"/>
-<!-- Interactive Pulsing Hotspots -->
-<div class="absolute top-[40%] left-[25%] group/hotspot"><div class="relative group/marker cursor-pointer"><div class="w-4 h-4 bg-[#8FA08A] rounded-full border border-white/40 flex items-center justify-center transition-transform group-hover/marker:scale-125"><div class="w-1 h-1 bg-white rounded-full"></div></div><div class="absolute left-6 top-0 bg-white/80 backdrop-blur-md px-3 py-1 rounded border border-white/60 opacity-0 group-hover/marker:opacity-100 transition-opacity pointer-events-none whitespace-nowrap"><span class="font-label-caps text-[9px] tracking-widest text-[#121212]">ENGRAVED HALLMARK</span></div></div></div>
-<div class="absolute top-[35%] left-[55%] group/hotspot"><div class="relative group/marker cursor-pointer"><div class="w-4 h-4 bg-[#8FA08A] rounded-full border border-white/40 flex items-center justify-center transition-transform group-hover/marker:scale-125"><div class="w-1 h-1 bg-white rounded-full"></div></div><div class="absolute left-6 top-0 bg-white/80 backdrop-blur-md px-3 py-1 rounded border border-white/60 opacity-0 group-hover/marker:opacity-100 transition-opacity pointer-events-none whitespace-nowrap"><span class="font-label-caps text-[9px] tracking-widest text-[#121212]">PREMIUM TEXTILE</span></div></div></div>
-<div class="absolute top-[50%] left-[78%] group/hotspot"><div class="relative group/marker cursor-pointer"><div class="w-4 h-4 bg-[#8FA08A] rounded-full border border-white/40 flex items-center justify-center transition-transform group-hover/marker:scale-125"><div class="w-1 h-1 bg-white rounded-full"></div></div><div class="absolute left-6 top-0 bg-white/80 backdrop-blur-md px-3 py-1 rounded border border-white/60 opacity-0 group-hover/marker:opacity-100 transition-opacity pointer-events-none whitespace-nowrap"><span class="font-label-caps text-[9px] tracking-widest text-[#121212]">ARTISANAL FINISH</span></div></div></div>
-<!-- Floating Glass Card -->
-<div class="absolute bottom-12 left-12 reveal-up active"><div class="bg-white/40 backdrop-blur-xl py-10 px-12 rounded-2xl border border-white/60 max-w-2xl shadow-sm relative overflow-hidden"><div class="border-b border-black/5 mb-8 pb-2"><h2 class="font-display-lg text-[32px] md:text-[44px] text-[#121212] tracking-widest leading-tight">Elevate your style with timeless men's fashion</h2></div><p class="font-display-lg text-[#4A4A4A] max-w-xl leading-relaxed mb-10 text-lg tracking-widest">From everyday essentials to statement pieces, our men's clothing line is crafted to complement your unique style. Step into the season with confidence and sophistication.</p><div class="flex items-center gap-8 pt-6 border-t border-black/5"><a class="bg-white text-[#121212] font-label-caps font-bold px-10 py-4 rounded-full uppercase tracking-widest shadow-sm hover:bg-surface transition-colors" href="collections.html">Shop Now</a><a class="flex items-center gap-2 text-[#8FA08A] font-label-caps font-semibold uppercase tracking-widest hover:opacity-70 transition-opacity" href="about.html"><span class="material-symbols-outlined">token</span>HALLMARK TOUR</a></div></div></div>
+<!-- Campaign banner (rebuilt: card sits under the photo up to laptops, over it from 1280px) -->
+<section class="relative bg-[#efece6]" aria-labelledby="campaign-title">
+<div class="relative aspect-[4/3] md:aspect-[16/9] xl:aspect-[2.4/1] overflow-hidden group">
+<img alt="Everyday Collective campaign: tailored pieces on a rail" class="w-full h-full object-cover transition-transform duration-[3s] ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAT0tjkE7nYwCMAo1mS73H2nGqaqHmcJOESgI5AdMxo93TYvK4H1AwG-omnGjk6RgCUFPnkrbnTbpnG-Mlh0xzbaGFS_rQfRr4Yr0icUVCiQ8zWLJ_vN05vaeLXCSUeuhx7YDzGYAuzxQtP0wR8zefa0iagniDhNCMJ_07A6zAHJVABsXEpriqW1EgruzqFM5uv-FSQP49H2cMoGPH1_-_aT0E7zYoNR1e2EktHpPboczMeW50z6tNg6AwyZU2PHWnJ7p6iFRKPpznPZg" loading="lazy"/>
+<div class="absolute inset-0 hidden xl:block bg-gradient-to-r from-black/25 via-transparent to-transparent" aria-hidden="true"></div>
+<span class="rs-spot hidden xl:flex" style="top:28%;left:56%"><span class="rs-spot-dot" aria-hidden="true"></span><span class="rs-spot-label">Engraved hallmark</span></span>
+<span class="rs-spot hidden xl:flex" style="top:60%;left:63%"><span class="rs-spot-dot" aria-hidden="true"></span><span class="rs-spot-label">Premium textile</span></span>
+<span class="rs-spot hidden xl:flex" style="top:42%;left:79%"><span class="rs-spot-dot" aria-hidden="true"></span><span class="rs-spot-label">Artisanal finish</span></span>
+</div>
+<div class="px-5 py-12 md:px-10 xl:p-0 xl:absolute xl:bottom-12 xl:left-16 xl:max-w-xl">
+<div class="xl:bg-white/60 xl:backdrop-blur-xl xl:rounded-2xl xl:border xl:border-white/60 xl:p-10 xl:shadow-sm">
+<p class="font-label-caps text-[11px] tracking-[0.3em] text-on-surface-variant mb-4">EVERYDAY COLLECTIVE</p>
+<h2 id="campaign-title" class="font-display-lg text-[34px] md:text-[44px] leading-[1.08] text-[#121212]">Elevate your style with timeless men's fashion</h2>
+<p class="mt-5 text-base leading-relaxed text-on-surface-variant max-w-lg">From everyday essentials to statement pieces, our men's clothing line is crafted to complement your unique style. Step into the season with confidence and sophistication.</p>
+<div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
+<a class="rs-btn-primary" href="collections.html">SHOP NOW <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span></a>
+<a class="inline-flex items-center gap-2 min-h-[44px] font-label-caps text-[11px] tracking-[0.2em] text-[#4f6349] hover:text-primary transition-colors" href="about.html"><span class="material-symbols-outlined text-[20px]" aria-hidden="true">token</span>HALLMARK TOUR</a>
+</div>
+</div>
 </div>
 </section>
 <!-- New Arrivals Section -->
-<section class="max-w-container-max mx-auto px-margin-desktop py-stack-xl reveal-up active">
+<section id="new-arrivals" class="scroll-mt-24 max-w-container-max mx-auto px-margin-desktop py-stack-xl reveal-up active">
 <!-- Header Section -->
 <header class="flex flex-col md:flex-row md:items-end justify-between mb-stack-lg gap-6">
 <div class="space-y-4">
