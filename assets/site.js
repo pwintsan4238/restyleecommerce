@@ -24,14 +24,19 @@
   const useLive = (list) => { if (Array.isArray(list) && list.length) { PRODUCTS.length = 0; list.forEach((p) => PRODUCTS.push(p)); liveInUse = true; } };
   let liveCache = load('live', null);
   if (liveCache) useLive(liveCache.products);
+  // Bundles and membership tiers come with the product list (see Code.gs publicPromotions_)
+  const NO_PROMOS = { membership: false, tiers: [], bundles: [] };
+  let PROMOS = (liveCache && liveCache.promotions) || NO_PROMOS;
   function refreshLive(onChange, force) {
     if (!CONFIG.ORDER_ENDPOINT || (!force && liveCache && Date.now() - liveCache.at < LIVE_MAX_AGE)) return;
     fetch(CONFIG.ORDER_ENDPOINT + '?action=products', { signal: AbortSignal.timeout(20000) }).then((r) => r.json()).then((out) => {
       if (!out.ok || !Array.isArray(out.products)) return; // older backend without a Products tab
-      const changed = JSON.stringify(out.products) !== JSON.stringify(liveCache && liveCache.products);
-      liveCache = { at: Date.now(), products: out.products };
+      const promos = out.promotions || NO_PROMOS;
+      const changed = JSON.stringify([out.products, promos]) !== JSON.stringify(liveCache && [liveCache.products, liveCache.promotions || NO_PROMOS]);
+      liveCache = { at: Date.now(), products: out.products, promotions: promos };
       save('live', liveCache);
-      if (changed && out.products.length) { useLive(out.products); if (onChange) onChange(); }
+      PROMOS = promos;
+      if (changed) { useLive(out.products); if (onChange) onChange(); }
     }).catch(() => {});
   }
 
@@ -48,6 +53,90 @@
   // Only lines that still match a sellable product, colour and size count
   const validLines = () => getCart().filter((i) => { const p = byId(i.id); return p && !p.soldOut && p.colors.some((c) => c.name === i.color) && p.sizes.includes(i.size); });
   const lineTotal = (lines) => lines.reduce((n, i) => n + byId(i.id).price * i.qty, 0);
+  // The pricing rule, the same as promoTotals_ in Code.gs (the Sheet re-checks every order).
+  // Each complete set of a bundle's pieces gets its % off; a piece counts towards one bundle, best discount first.
+  // A member discount then applies to what's left.
+  function promoTotals(items, tier) {
+    const price = {}, left = {};
+    let subtotal = 0;
+    items.forEach((i) => { price[i.id] = i.price; left[i.id] = (left[i.id] || 0) + i.qty; subtotal += i.price * i.qty; });
+    const bundles = [];
+    PROMOS.bundles.filter((b) => b.active).slice().sort((a, b) => b.percent - a.percent).forEach((b) => {
+      const sets = Math.min(...b.items.map((id) => left[id] || 0));
+      if (!(sets > 0)) return;
+      const setPrice = b.items.reduce((n, id) => n + price[id], 0);
+      b.items.forEach((id) => { left[id] -= sets; });
+      bundles.push({ id: b.id, name: b.name, sets, percent: b.percent, discount: Math.round(setPrice * sets * b.percent / 100) });
+    });
+    const bundleDiscount = bundles.reduce((n, b) => n + b.discount, 0);
+    const base = subtotal - bundleDiscount;
+    let memberDiscount = 0;
+    if (tier && PROMOS.membership) memberDiscount = tier.type === 'amount' ? Math.min(Math.round(tier.value), base) : Math.round(base * tier.value / 100);
+    return { subtotal, bundles, bundleDiscount, tierName: memberDiscount ? tier.name : '', memberDiscount, total: base - memberDiscount + (CONFIG.DELIVERY_FEE || 0) };
+  }
+  const priced = (lines) => lines.map((i) => ({ ...i, price: byId(i.id).price }));
+  const tierDeal = (t) => (t.type === 'amount' ? fmt(t.value) + ' off' : t.value + '% off');
+  const tierBadge = (name) => `<span class="rs-tier" data-tier="${esc(name)}">${esc(name)}</span>`;
+  // Lines for a summary box: bundle savings and the member discount
+  const discountRows = (t, cls) => t.bundles.map((b) => `<div class="flex justify-between gap-4 ${cls} rs-disc"><span>Bundle: ${esc(b.name)}${b.sets > 1 ? ' × ' + b.sets : ''}</span><span>−${fmt(b.discount)}</span></div>`).join('')
+    + (t.memberDiscount ? `<div class="flex justify-between gap-4 ${cls} rs-disc"><span>${esc(t.tierName)} member</span><span>−${fmt(t.memberDiscount)}</span></div>` : '');
+
+  // "Member privileges" button with a popover listing the tiers. align: 'left' | 'right'; up: open above.
+  let tipCount = 0;
+  function privilegeTip(label = 'Member privileges', { align = 'left', up = false } = {}) {
+    if (!PROMOS.membership || !PROMOS.tiers.length) return '';
+    const id = 'rs-tip-' + (++tipCount);
+    return `<span class="rs-tip"><button type="button" class="rs-tip-btn" aria-expanded="false" aria-controls="${id}" data-tip><span class="material-symbols-outlined" aria-hidden="true">workspace_premium</span>${esc(label)}</button>
+      <span class="rs-tip-pop${align === 'right' ? ' right' : ''}${up ? ' up' : ''}" id="${id}" role="region" aria-label="Membership tiers" hidden>
+        <strong class="block text-[11px] tracking-[0.2em] uppercase">RESTYLE Membership</strong>
+        <span class="block text-neutral-300 mt-1">Your total spend on paid orders unlocks a discount on every order.</span>
+        <ul>${PROMOS.tiers.map((t) => `<li>${tierBadge(t.name)}<span class="text-right"><strong>${tierDeal(t)}</strong><span class="block text-[11px] text-neutral-400">from ${fmt(t.threshold)} spent</span></span></li>`).join('')}</ul>
+        <span class="block text-neutral-300">We recognise you by your phone number at checkout. <a href="info.html?p=membership">How it works</a></span>
+      </span></span>`;
+  }
+  // One set of listeners for every tooltip on the page
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-tip]');
+    $$('[data-tip][aria-expanded="true"]').forEach((b) => { if (b !== btn) { b.setAttribute('aria-expanded', 'false'); $('#' + b.getAttribute('aria-controls')).hidden = true; } });
+    if (!btn) return;
+    const open = btn.getAttribute('aria-expanded') !== 'true';
+    const pop = $('#' + btn.getAttribute('aria-controls'));
+    btn.setAttribute('aria-expanded', String(open));
+    pop.hidden = !open;
+    if (!open) return;
+    // Keep the popover on screen on narrow phones. `translate` rather than `transform`,
+    // because the fade-in animation owns `transform`.
+    pop.style.translate = '';
+    const r = pop.getBoundingClientRect(), edge = 12;
+    const shift = r.left < edge ? edge - r.left : r.right > innerWidth - edge ? innerWidth - edge - r.right : 0;
+    if (shift) pop.style.translate = `${Math.round(shift)}px 0`;
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    const b = $('[data-tip][aria-expanded="true"]');
+    if (b) { b.setAttribute('aria-expanded', 'false'); $('#' + b.getAttribute('aria-controls')).hidden = true; b.focus(); }
+  });
+
+  // Membership status for a phone number, asked of the Sheet once per number per visit
+  const phoneKey = (p) => String(p || '').replace(/\D/g, '').replace(/^(95|0)+/, '');
+  const memberCache = {};
+  function memberFor(phone) {
+    const k = phoneKey(phone);
+    if (!PROMOS.membership || k.length < 6 || !CONFIG.ORDER_ENDPOINT) return Promise.resolve(null);
+    if (!memberCache[k]) memberCache[k] = postApi({ action: 'member', phone }).catch(() => { delete memberCache[k]; return null; });
+    return memberCache[k];
+  }
+
+  // Bundles a product belongs to, with the other pieces and the set price
+  function bundlesFor(p) {
+    return PROMOS.bundles.filter((b) => b.active && b.items.includes(p.id)).map((b) => {
+      const items = b.items.map(byId).filter(Boolean);
+      if (items.length !== b.items.length) return null;
+      const full = items.reduce((n, x) => n + x.price, 0);
+      return { ...b, products: items, full, price: full - Math.round(full * b.percent / 100) };
+    }).filter(Boolean);
+  }
+
   const icon = (el) => { const s = el.querySelector('.material-symbols-outlined'); return s ? s.textContent.trim() : ''; };
   const label = (el) => norm(el.textContent.replace(/\b(arrow_forward|north_east|add|remove)\b/g, ''));
 
@@ -462,7 +551,14 @@
           <p class="flex items-center gap-2 text-[10px] tracking-[0.2em] uppercase text-on-surface-variant mb-5">
             <span class="w-1.5 h-1.5 rounded-full ${p.soldOut ? 'bg-red-600' : 'bg-emerald-600'}"></span>${p.soldOut ? 'Sold out' : 'Available in stock'}</p>
           <h1 class="font-display-lg text-[40px] md:text-[52px] leading-[1.05] mb-4">${esc(p.name)}</h1>
-          <p class="font-display-lg text-2xl mb-10 rs-num">${fmt(p.price)}</p>
+          <p class="font-display-lg text-2xl mb-4 rs-num">${fmt(p.price)}</p>
+          <div class="mb-8 space-y-4">${privilegeTip('Member privileges')}
+            ${bundlesFor(p).map((b) => `<div class="rs-bundle"><p class="text-[10px] tracking-[0.2em] uppercase flex items-center gap-2"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">redeem</span>Bundle offer <span class="rs-save">Save ${b.percent}%</span></p>
+              <p class="font-display-lg text-xl mt-2">${esc(b.name)}</p>
+              <div class="rs-bundle-items">${b.products.map((x) => `<a href="${url(x)}" class="${x.id === p.id ? 'is-in' : ''}"><img src="${x.img}" alt=""/><span class="truncate">${esc(x.name)}</span></a>`).join('')}</div>
+              <p class="text-sm rs-num">Buy the set: <s class="text-on-surface-variant">${fmt(b.full)}</s> <strong>${fmt(b.price)}</strong></p>
+              <p class="text-xs text-on-surface-variant mt-1">Add every piece to your bag, any colour or size. The saving appears in your bag.</p></div>`).join('')}
+          </div>
           <p class="text-[10px] tracking-[0.2em] uppercase text-on-surface-variant mb-3">Colour — <span id="pd-color-name" class="text-primary">${esc(color)}</span></p>
           <div class="flex flex-wrap gap-4 mb-8" id="pd-colors" role="group" aria-label="Colour">${p.colors.map((c, i) => `<button class="rs-swatch" style="background:${c.hex}" data-color="${esc(c.name)}" aria-pressed="${i === 0}" aria-label="${esc(c.name)}" title="${esc(c.name)}"></button>`).join('')}</div>
           <div class="flex justify-between items-center mb-3"><p class="text-[10px] tracking-[0.2em] uppercase text-on-surface-variant">Select size</p>
@@ -544,8 +640,12 @@
       setTimeout(() => toast(dropped + (dropped > 1 ? ' pieces are' : ' piece is') + ' no longer available and ' + (dropped > 1 ? 'were' : 'was') + ' removed from your bag', 'info'), 50);
     }
     if (!cart.length) { root.innerHTML = emptyState('shopping_bag', 'Your bag is empty', 'Pieces you add will wait here for you.'); return; }
-    const subtotal = lineTotal(cart);
     const shipping = CONFIG.DELIVERY_FEE || 0;
+    const t = promoTotals(priced(cart), null);
+    // Bundles that are part-way there: say what's missing
+    const inBag = new Set(cart.map((i) => i.id));
+    const nearly = PROMOS.bundles.filter((b) => b.active && !t.bundles.some((x) => x.id === b.id) && b.items.some((id) => inBag.has(id)))
+      .map((b) => ({ ...b, missing: b.items.filter((id) => !inBag.has(id)).map(byId).filter(Boolean) })).filter((b) => b.missing.length && b.missing.length < b.items.length);
     root.innerHTML = `<h1 class="font-display-lg text-4xl md:text-5xl mb-2">Your Bag</h1>
       <p class="text-on-surface-variant mb-12">${cart.reduce((n, i) => n + i.qty, 0)} piece(s) selected</p>
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
@@ -558,11 +658,16 @@
                 <button data-qty="${idx}" data-d="-1" aria-label="Decrease quantity of ${esc(p.name)}" ${i.qty <= 1 ? 'disabled' : ''}>−</button><span class="w-6 text-center text-sm rs-num">${i.qty}</span><button data-qty="${idx}" data-d="1" aria-label="Increase quantity of ${esc(p.name)}" ${i.qty >= 10 ? 'disabled' : ''}>+</button></div>
                 <button class="inline-flex items-center gap-1 py-3 text-[10px] tracking-[0.2em] uppercase text-on-surface-variant hover:text-red-700 transition-colors" data-remove="${idx}" aria-label="Remove ${esc(p.name)} from bag"><span class="material-symbols-outlined text-[16px]" aria-hidden="true">delete</span>Remove</button></div></div></li>`; }).join('')}
         </ul>
-        <aside class="bg-white/60 border border-black/5 rounded-lg p-8 space-y-4 lg:sticky lg:top-28 rs-num">
+        ${nearly.length ? `<div class="lg:col-span-2 lg:row-start-2 -mt-6 space-y-3">${nearly.map((b) => `<p class="rs-bundle text-sm flex flex-wrap items-center gap-2"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">redeem</span>
+          Add ${b.missing.map((x) => `<a class="underline underline-offset-4 font-semibold" href="${url(x)}">${esc(x.name)}</a>`).join(' and ')} to complete <strong>${esc(b.name)}</strong> and save ${b.percent}% on the set.</p>`).join('')}</div>` : ''}
+        <aside class="bg-white/60 border border-black/5 rounded-lg p-8 space-y-4 lg:sticky lg:top-28 rs-num lg:row-start-1 lg:col-start-3">
           <h2 class="text-[11px] tracking-[0.2em] uppercase mb-4">Summary</h2>
-          <div class="flex justify-between text-sm"><span>Subtotal</span><span>${fmt(subtotal)}</span></div>
+          <div class="flex justify-between text-sm"><span>Subtotal</span><span>${fmt(t.subtotal)}</span></div>
+          ${discountRows(t, 'text-sm')}
           ${shipping ? `<div class="flex justify-between text-sm"><span>Delivery</span><span>${fmt(shipping)}</span></div>` : ''}
-          <div class="flex justify-between font-display-lg text-2xl pt-4 border-t border-black/10"><span>Total</span><span>${fmt(subtotal + shipping)}</span></div>
+          <div class="flex justify-between font-display-lg text-2xl pt-4 border-t border-black/10"><span>Total</span><span>${fmt(t.total)}</span></div>
+          ${t.bundleDiscount ? `<p class="text-xs rs-disc text-center">You’re saving ${fmt(t.bundleDiscount)} with bundles.</p>` : ''}
+          ${PROMOS.membership && PROMOS.tiers.length ? `<div class="text-xs text-on-surface-variant flex flex-wrap items-center gap-2 justify-center"><span>Members get up to ${tierDeal(PROMOS.tiers[PROMOS.tiers.length - 1])} at checkout.</span>${privilegeTip('Tiers', { align: 'right' })}</div>` : ''}
           <a class="${btnDark} mt-4 flex items-center justify-center gap-2" href="checkout.html"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">lock</span>PROCEED TO CHECKOUT</a>
           <p class="text-[11px] text-on-surface-variant text-center leading-relaxed">Pay by KBZ Pay transfer after placing your order.</p>
           <a href="collections.html" class="block text-center text-[10px] tracking-[0.2em] uppercase underline underline-offset-4 pt-2">Continue shopping</a>
@@ -597,8 +702,9 @@
     const root = $('#checkout-root'); if (!root) return;
     const cart = validLines();
     if (!cart.length) { root.innerHTML = emptyState('shopping_bag', 'Your bag is empty', 'Add a piece before checking out.'); return; }
-    const subtotal = lineTotal(cart);
-    const total = subtotal + (CONFIG.DELIVERY_FEE || 0);
+    let member = null; // { tier, next } from the Sheet for the phone entered
+    const totalsNow = () => promoTotals(priced(validLines()), member && member.tier);
+    const total = totalsNow().total;
     const saved = load('billing', {});
     const inputCls = 'w-full border border-black/20 rounded-md px-4 py-3 text-base sm:text-sm bg-white focus:border-black focus:ring-1 focus:ring-black transition-colors';
     const field = (name, labelText, opts = {}) => `<div class="${opts.cls || ''}">
@@ -635,9 +741,8 @@
           <div class="flex items-center justify-between mb-6"><h2 class="text-sm font-semibold flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-primary text-white text-[11px] inline-flex items-center justify-center" aria-hidden="true">3</span>Your order</h2><a href="cart.html" class="text-xs underline underline-offset-4 py-2">Edit bag</a></div>
           <div class="flex justify-between text-xs font-semibold pb-4 border-b border-black/10"><span>Product</span><span>Subtotal</span></div>
           ${cart.map((i) => `<div class="flex justify-between items-center gap-4 text-sm py-4 border-b border-dashed border-black/10"><span class="flex items-center gap-3 min-w-0"><img src="${byId(i.id).img}" alt="" class="w-10 h-12 object-cover rounded shrink-0"/><span class="text-on-surface-variant">${esc(lineLabel(i))} <strong class="text-primary">× ${i.qty}</strong></span></span><span class="whitespace-nowrap">${fmt(byId(i.id).price * i.qty)}</span></div>`).join('')}
-          <div class="flex justify-between text-sm py-4 border-b border-dashed border-black/10"><span>Subtotal</span><span>${fmt(subtotal)}</span></div>
-          ${CONFIG.DELIVERY_FEE ? `<div class="flex justify-between text-sm py-4 border-b border-dashed border-black/10"><span>Delivery</span><span>${fmt(CONFIG.DELIVERY_FEE)}</span></div>` : ''}
-          <div class="flex justify-between items-baseline font-semibold py-4"><span class="text-sm">Total</span><span class="font-display-lg text-2xl">${fmt(total)}</span></div>
+          <div id="co-totals"></div>
+          <div id="co-member" class="mt-2" aria-live="polite"></div>
           <div class="border border-black/10 border-l-2 border-l-amber-700 rounded-md mt-6 bg-white">
             <label class="flex items-center gap-3 px-4 py-4 border-b border-black/10 text-sm cursor-pointer">
               <input type="radio" name="payment" value="${esc(CONFIG.PAYMENT.title)}" checked class="text-amber-700 focus:ring-amber-700"/>${esc(CONFIG.PAYMENT.title)}</label>
@@ -650,7 +755,31 @@
       </form>`;
 
     const form = $('#checkout-form'), err = $('#co-error'), btn = $('#co-submit');
-    const btnLabel = btn.textContent;
+    let btnLabel = btn.textContent;
+    // Totals box: subtotal, bundle and member savings, total — redrawn when the phone (and so the tier) changes
+    const drawTotals = () => {
+      const t = totalsNow();
+      $('#co-totals').innerHTML = `<div class="flex justify-between text-sm py-4 border-b border-dashed border-black/10"><span>Subtotal</span><span>${fmt(t.subtotal)}</span></div>
+        ${t.bundles.length || t.memberDiscount ? `<div class="py-3 border-b border-dashed border-black/10 space-y-2">${discountRows(t, 'text-sm')}</div>` : ''}
+        ${CONFIG.DELIVERY_FEE ? `<div class="flex justify-between text-sm py-4 border-b border-dashed border-black/10"><span>Delivery</span><span>${fmt(CONFIG.DELIVERY_FEE)}</span></div>` : ''}
+        <div class="flex justify-between items-baseline font-semibold py-4"><span class="text-sm">Total</span><span class="font-display-lg text-2xl">${fmt(t.total)}</span></div>`;
+      const box = $('#co-member');
+      if (!PROMOS.membership || !PROMOS.tiers.length) box.innerHTML = '';
+      else if (member && member.tier) box.innerHTML = `<div class="rs-bundle text-sm flex flex-wrap items-center gap-2">${tierBadge(member.tier.name)}<span>Welcome back — <strong>${tierDeal(member.tier)}</strong> applied.</span>${member.next ? `<span class="text-xs text-on-surface-variant w-full">${esc(member.next.name)} unlocks at ${fmt(member.next.threshold)} total spend.</span>` : ''}</div>`;
+      else box.innerHTML = `<div class="text-xs text-on-surface-variant flex flex-wrap items-center gap-2">${member ? `<span>Not a member yet. ${esc(PROMOS.tiers[0].name)} unlocks at ${fmt(PROMOS.tiers[0].threshold)} total spend.</span>` : '<span>Members get their discount here after entering their phone number.</span>'}${privilegeTip('Tiers', { align: 'right', up: true })}</div>`;
+      btnLabel = 'Place order · ' + fmt(t.total);
+      if (!btn.disabled) btn.textContent = btnLabel;
+    };
+    drawTotals();
+    // Look up the tier when a valid phone number is entered (and once for a saved number)
+    const phoneInput = $('#co-phone');
+    const checkMember = () => {
+      if (!phoneInput.checkValidity()) { member = null; drawTotals(); return Promise.resolve(); }
+      const asked = phoneInput.value;
+      return memberFor(asked).then((m) => { if (phoneInput.value === asked) { member = m; drawTotals(); } });
+    };
+    phoneInput.addEventListener('change', checkMember);
+    if (phoneInput.value) checkMember();
     let tried = false;
     const message = (el) => {
       const label = (form.querySelector('label[for="' + el.id + '"]')?.firstChild?.textContent || 'This field').trim();
@@ -690,9 +819,12 @@
         // Reuse the code on retry, so an order that did reach the sheet shows up as a duplicate, not a new order
         code: (form.dataset.code ||= orderCode()),
         items: lines.map((i) => { const p = byId(i.id); return { id: p.id, name: p.name, color: i.color, size: i.size, qty: i.qty, price: p.price }; }),
-        total: lineTotal(lines) + (CONFIG.DELIVERY_FEE || 0),
         createdAt: new Date().toISOString(),
       };
+      // Make sure the tier for this exact phone number is known before working out the total
+      await checkMember();
+      const t = totalsNow();
+      Object.assign(order, { total: t.total, subtotal: t.subtotal, bundles: t.bundles, memberDiscount: t.memberDiscount, tier: t.tierName });
       btn.disabled = true; btn.innerHTML = '<span class="rs-spinner" aria-hidden="true"></span>Placing order…';
       try {
         if (CONFIG.ORDER_ENDPOINT) {
@@ -700,6 +832,8 @@
           const res = await fetch(CONFIG.ORDER_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(order), signal: AbortSignal.timeout(20000) });
           const out = await res.json();
           if (!out.ok) throw new Error(out.error || 'Order was not accepted');
+          // The Sheet's figures are the ones the customer pays
+          Object.assign(order, { total: out.total ?? order.total, memberDiscount: out.memberDiscount ?? order.memberDiscount, tier: out.tier ?? order.tier });
         } else {
           order.test = true;
         }
@@ -715,7 +849,9 @@
           : ex.message + '.';
         // The shop changed under the buyer (price, stock): fetch the new catalogue and send them to the bag
         if (/sold out|no longer available|not available|Prices have changed/.test(ex.message)) {
-          refreshLive(null, true);
+          // Prices, stock, bundles or a tier changed: refresh them and forget cached tiers
+          refreshLive(() => drawTotals(), true);
+          Object.keys(memberCache).forEach((k) => delete memberCache[k]);
           err.innerHTML = esc(ex.message) + '. <a href="cart.html" class="underline font-semibold">Review your bag</a>';
         } else {
           err.textContent = "We couldn't place your order. " + why + ' Your bag is saved — please try again, or call ' + CONTACT.phone + ' with order code ' + order.code + '.';
@@ -752,6 +888,9 @@
       <h2 class="text-sm font-semibold mb-4">Order details</h2>
       <div class="border border-black/10 rounded-md divide-y divide-black/10 mb-10 text-sm">
         ${o.items.map((i) => `<div class="flex justify-between gap-4 px-5 py-4"><span>${esc(i.name)} - ${esc(i.color)}, ${esc(i.size)} <strong>× ${i.qty}</strong></span><span class="whitespace-nowrap">${fmt(i.price * i.qty)}</span></div>`).join('')}
+        ${(o.bundles && o.bundles.length) || o.memberDiscount ? `<div class="px-5 py-4 space-y-2"><div class="flex justify-between"><span>Subtotal</span><span>${fmt(o.subtotal)}</span></div>
+          ${(o.bundles || []).map((b) => `<div class="flex justify-between rs-disc"><span>Bundle: ${esc(b.name)}${b.sets > 1 ? ' × ' + b.sets : ''}</span><span>−${fmt(b.discount)}</span></div>`).join('')}
+          ${o.memberDiscount ? `<div class="flex justify-between rs-disc"><span>${esc(o.tier)} member</span><span>−${fmt(o.memberDiscount)}</span></div>` : ''}</div>` : ''}
         <div class="flex justify-between px-5 py-4 font-semibold"><span>Total</span><span>${fmt(o.total)}</span></div>
       </div>
       <div class="grid sm:grid-cols-2 gap-6 text-sm mb-12">
@@ -782,9 +921,24 @@
     orders: ['Orders', 'Orders are currently confirmed directly with our concierge. Your bag and wishlist are saved on this device so you can return to them at any time.'],
     privacy: ['Privacy policy', 'We only use the details you share with us — such as your name, email and phone number — to answer enquiries, confirm orders and send updates you have asked for. We never sell your information. Your bag and wishlist are stored only in your own browser. Contact us at any time to have your details removed.'],
   };
+  function renderMembership(root) {
+    document.title = 'Membership | RESTYLE';
+    const on = PROMOS.membership && PROMOS.tiers.length;
+    const bundles = PROMOS.bundles.filter((b) => b.active);
+    root.innerHTML = `<p class="text-[10px] tracking-[0.3em] uppercase text-on-surface-variant mb-4">RESTYLE atelier</p><h1 class="font-display-lg text-4xl md:text-5xl mb-6">Membership &amp; offers</h1>
+      ${on ? `<p class="text-lg leading-relaxed text-on-surface-variant mb-10">The more you shop with us, the more you save. Your total spend on paid orders unlocks a tier, and its discount applies to every order after that.</p>
+        <div class="grid sm:grid-cols-3 gap-4 mb-10">${PROMOS.tiers.map((t) => `<div class="rs-bundle"><p class="mb-4">${tierBadge(t.name)}</p><p class="font-display-lg text-3xl rs-num">${tierDeal(t)}</p><p class="text-xs text-on-surface-variant mt-2 rs-num">every order, once you’ve spent ${fmt(t.threshold)}</p></div>`).join('')}</div>
+        <h2 class="text-sm font-semibold mb-3">How it works</h2>
+        <ul class="list-disc pl-5 space-y-2 text-on-surface-variant mb-12"><li>We recognise you by the phone number you use at checkout — no account needed.</li><li>Orders count once they’re paid. Your tier and discount show at checkout as soon as you enter your phone number.</li><li>Member discounts are added on top of bundle savings.</li></ul>`
+        : '<p class="text-lg leading-relaxed text-on-surface-variant mb-12">Our membership programme is coming soon.</p>'}
+      ${bundles.length ? `<h2 class="text-sm font-semibold mb-4">Bundle offers</h2><div class="grid gap-4 mb-12">${bundles.map((b) => { const items = b.items.map(byId).filter(Boolean); return `<div class="rs-bundle"><p class="font-display-lg text-xl">${esc(b.name)} <span class="rs-save">Save ${b.percent}%</span></p><div class="rs-bundle-items">${items.map((x) => `<a href="${url(x)}"><img src="${x.img}" alt=""/><span class="truncate">${esc(x.name)}</span></a>`).join('')}</div></div>`; }).join('')}</div>` : ''}
+      <div class="flex flex-wrap gap-3"><a href="collections.html" class="bg-primary text-white px-8 py-4 rounded-full text-[11px] tracking-[0.2em]">SHOP THE COLLECTION</a><a href="account.html" class="border border-black/10 px-8 py-4 rounded-full text-[11px] tracking-[0.2em]">TRACK AN ORDER</a></div>`;
+  }
+
   function renderInfo() {
     const root = $('#info-root'); if (!root) return;
     const key = new URLSearchParams(location.search).get('p');
+    if (key === 'membership') return renderMembership(root);
     const [title, text] = INFO[key] || INFO.privacy;
     document.title = title + ' | RESTYLE';
     const orders = load('orders', []);
@@ -830,6 +984,9 @@
         ${o.tracking ? `<div><p class="rs-label mb-1">Tracking no.</p><p class="break-all">${esc(o.tracking)}</p></div>` : ''}
         ${o.deliveryDate ? `<div><p class="rs-label mb-1">Expected delivery</p><p>${esc(date(o.deliveryDate))}</p></div>` : ''}</div>` : ''}
       <ul class="text-sm divide-y divide-dashed divide-black/10 border-t border-black/10">${(o.items || []).map((i) => `<li class="flex justify-between gap-4 py-3"><span>${esc(i.name)}${i.qty ? `${i.color ? ` - ${esc(i.color)}, ${esc(i.size)}` : ''} <strong>× ${i.qty}</strong>` : ''}</span>${i.qty ? `<span class="whitespace-nowrap">${fmt(i.price * i.qty)}</span>` : ''}</li>`).join('')}</ul>
+      ${o.bundleDiscount || o.memberDiscount ? `<div class="text-sm pt-3 border-t border-black/10 space-y-1"><div class="flex justify-between"><span>Subtotal</span><span>${fmt(o.subtotal)}</span></div>
+        ${o.bundleDiscount ? `<div class="flex justify-between rs-disc"><span>Bundle savings</span><span>−${fmt(o.bundleDiscount)}</span></div>` : ''}
+        ${o.memberDiscount ? `<div class="flex justify-between rs-disc"><span>${esc(o.memberTier)} member</span><span>−${fmt(o.memberDiscount)}</span></div>` : ''}</div>` : ''}
       <div class="flex justify-between font-semibold pt-4 border-t border-black/10"><span>Total</span><span>${fmt(o.total)}</span></div></div>`;
   };
 
@@ -930,9 +1087,24 @@
     if (billing.phone) $('#tr-phone').value = billing.phone;
 
     if (staff) return;
-    const signedIn = (r) => { sessionStorage.setItem('restyle.admin', JSON.stringify({ token: r.token, user: r.user })); location.href = 'admin.html'; };
+    // The dashboard sends people here when their session ends; say so, and take them back afterwards
+    const why = sessionStorage.getItem('restyle.adminMsg');
+    if (why) {
+      sessionStorage.removeItem('restyle.adminMsg');
+      const note = document.createElement('p');
+      note.className = 'text-xs bg-amber-50 border border-amber-200 text-amber-900 rounded-md px-4 py-3';
+      note.setAttribute('role', 'status');
+      note.textContent = why;
+      $('#admin-form').prepend(note);
+    }
+    const signedIn = (r) => {
+      sessionStorage.setItem('restyle.admin', JSON.stringify({ token: r.token, user: r.user }));
+      const back = sessionStorage.getItem('restyle.adminReturn') || '';
+      sessionStorage.removeItem('restyle.adminReturn');
+      location.href = 'admin.html' + (/^#[a-z]+$/.test(back) ? back : '');
+    };
     handle($('#admin-form'), '#ad-error', async (d) => signedIn(await postApi({ action: 'login', username: d.username.trim(), password: d.password })));
-    handle($('#setup-form'), '#su-error', async (d) => signedIn(await postApi({ action: 'setup', key: d.key.trim(), name: d.name.trim(), username: d.username.trim(), password: d.password })));
+    handle($('#setup-form'), '#su-error', async (d) => signedIn(await postApi({ action: 'setup', key: d.key.trim().toUpperCase(), name: d.name.trim(), username: d.username.trim().toLowerCase(), password: d.password })));
     $('#ad-show').addEventListener('click', (e) => {
       const b = e.currentTarget, input = $('#ad-pass'), show = input.type === 'password';
       input.type = show ? 'text' : 'password';
@@ -956,6 +1128,15 @@
   if (page === 'checkout') renderCheckout();
   if (page === 'order') renderOrder();
   if (page === 'account') renderAccount();
+  // Footer: a Membership link once there's something to show
+  const membershipLink = () => {
+    const list = $('footer a[href="cart.html"]')?.closest('ul');
+    if (!list || $('a[href="info.html?p=membership"]', list) || !(PROMOS.membership || PROMOS.bundles.some((b) => b.active))) return;
+    const li = document.createElement('li');
+    li.innerHTML = '<a class="font-body-md text-neutral-400 hover:text-white transition-colors" href="info.html?p=membership">Membership</a>';
+    list.appendChild(li);
+  };
+  membershipLink();
   syncCardPrices();
   updateBadges();
   syncWishIcons();
@@ -963,7 +1144,8 @@
   // Pick up dashboard changes (prices, stock, new pieces). The checkout form is left alone
   // so typing isn't lost; the server re-checks prices when the order is placed.
   refreshLive(() => {
-    fillCatalog(); initCards(); syncCardPrices(); updateBadges(); syncWishIcons();
+    fillCatalog(); initCards(); syncCardPrices(); updateBadges(); syncWishIcons(); membershipLink();
+    if (page === 'info') renderInfo();
     if (page === 'product') renderProduct();
     if (page === 'cart') renderCart();
     if (page === 'wishlist') renderWishlist();

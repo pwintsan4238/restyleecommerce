@@ -24,6 +24,7 @@
     { id: 'orders', label: 'Orders', icon: 'receipt_long', roles: ['owner', 'manager'] },
     { id: 'delivery', label: 'Delivery', icon: 'local_shipping', roles: ['owner', 'manager', 'delivery'] },
     { id: 'products', label: 'Products', icon: 'apparel', roles: ['owner', 'manager'] },
+    { id: 'promotions', label: 'Promotions', icon: 'sell', roles: ['owner', 'manager'] },
     { id: 'enquiries', label: 'Enquiries', icon: 'mail', roles: ['owner', 'manager'] },
     { id: 'staff', label: 'Staff', icon: 'group', roles: ['owner'] },
     { id: 'profile', label: 'My profile', icon: 'account_circle', roles: ['owner', 'manager', 'delivery'] },
@@ -34,9 +35,10 @@
   try { session = JSON.parse(sessionStorage.getItem('restyle.admin') || 'null'); } catch (e) { session = null; }
   if (!session || !session.token) { location.replace('account.html#admin'); return; }
 
+  // why: shown on the sign-in page. When the session ran out, the page they were on is reopened after signing in.
   const signOut = (why) => {
     sessionStorage.removeItem('restyle.admin');
-    if (why) sessionStorage.setItem('restyle.adminMsg', why);
+    if (why) { sessionStorage.setItem('restyle.adminMsg', why); sessionStorage.setItem('restyle.adminReturn', location.hash); }
     location.replace('account.html#admin');
   };
 
@@ -53,7 +55,7 @@
     return out;
   }
 
-  const state = { view: null, orders: null, products: null, enquiries: null, staff: null, orderFilter: 'all', orderQuery: '', productQuery: '', productFilter: 'all', enquiryFilter: 'open' };
+  const state = { view: null, orders: null, products: null, enquiries: null, staff: null, promotions: null, memberFilter: 'all', orderFilter: 'all', orderQuery: '', productQuery: '', productFilter: 'all', enquiryFilter: 'open' };
   const can = (viewId) => VIEWS.find((v) => v.id === viewId).roles.includes(session.user.role);
 
   // ---------------------------------------------------------------- feedback
@@ -167,7 +169,7 @@
   async function render(force) {
     const main = $('#admin-main');
     const view = state.view;
-    const needs = { overview: ['orders', 'enquiries'], orders: ['orders'], delivery: ['orders'], products: ['products'], enquiries: ['enquiries'], staff: ['staff'], profile: [] }[view]
+    const needs = { overview: ['orders', 'enquiries'], orders: ['orders'], delivery: ['orders'], products: ['products'], promotions: ['promotions', 'products', 'orders'], enquiries: ['enquiries'], staff: ['staff'], profile: [] }[view]
       .filter((k) => k !== 'enquiries' || can('enquiries'));
     const missing = needs.filter((k) => force || !state[k]);
     if (missing.length) {
@@ -175,15 +177,34 @@
       try { await Promise.all(missing.map(load)); } catch (e) { if (state.view === view) main.innerHTML = errorHtml(e.message); bindCommon(main); return; }
     }
     if (state.view !== view) return; // the user moved on while loading
+    draw(view, main);
+    // Data loaded more than 30 s ago is shown at once, then re-read and redrawn if the Sheet changed
+    const stale = needs.filter((k) => !missing.includes(k) && Date.now() - (loadedAt[k] || 0) > STALE_MS);
+    if (!stale.length) return;
+    const before = JSON.stringify(stale.map((k) => state[k]));
+    Promise.all(stale.map(load)).then(() => {
+      if (state.view !== view || JSON.stringify(stale.map((k) => state[k])) === before) return;
+      // Don't redraw under an open order or someone typing; the badges still update
+      if ($('.ad-overlay') || (document.activeElement && document.activeElement.matches('#admin-main input, #admin-main select, #admin-main textarea'))) return counts();
+      draw(view, main);
+    }).catch(() => {});
+  }
+
+  function draw(view, main) {
     VIEWS_RENDER[view](main);
     bindCommon(main);
     counts();
   }
 
+  const loadedAt = {};
+  const STALE_MS = 30000;
   async function load(kind) {
-    const action = { orders: 'orders.list', products: 'products.list', enquiries: 'enquiries.list', staff: 'staff.list' }[kind];
+    const action = { orders: 'orders.list', products: 'products.list', promotions: 'promotions.get', enquiries: 'enquiries.list', staff: 'staff.list' }[kind];
     const out = await api(action);
     state[kind] = out[kind];
+    loadedAt[kind] = Date.now();
+    // Newest first by real date, even if a date in the Sheet was typed by hand as text
+    if (kind === 'orders') state.orders.sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
   }
 
   function bindCommon(main) {
@@ -337,6 +358,98 @@
       }));
     },
 
+    promotions(main) {
+      const promo = state.promotions;
+      const products = state.products || [];
+      const byId = (id) => products.find((p) => p.id === id);
+      const draft = JSON.parse(JSON.stringify(promo));
+      const tierText = (t) => (t.threshold > 0 && t.value > 0 ? `Customers who have spent <strong class="rs-num">${fmt(t.threshold)}</strong> or more get <strong>${t.type === 'amount' ? fmt(t.value) : t.value + '%'} off</strong> every order.` : 'Switched off (set a spend and a discount to use it).');
+      const members = memberList();
+      const counts = TIER_ORDER.reduce((m, n) => ({ ...m, [n]: members.filter((x) => x.tier === n).length }), {});
+      const shown = members.filter((x) => state.memberFilter === 'all' || x.tier === state.memberFilter);
+
+      main.innerHTML = header('Promotions', 'Membership discounts and bundle offers. Changes reach the shop within a minute, and every order is re-checked by the Sheet.') + `
+        <section class="ad-sec" style="border-top:0;padding-top:0" aria-labelledby="pr-m">
+          <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+            <div><h2 class="ad-h2" id="pr-m">Membership tiers</h2><p class="text-sm text-on-surface-variant mt-1">Based on each customer’s total spend on paid orders, matched by phone number.</p></div>
+            <label class="ad-toggle text-sm"><input type="checkbox" id="pr-on" ${draft.membership ? 'checked' : ''}/><span></span>Membership on</label>
+          </div>
+          <div class="grid md:grid-cols-3 gap-4" id="pr-tiers">${draft.tiers.map((t, i) => `<article class="ad-tier" data-tier="${esc(t.name)}">
+            <p class="ad-tier-name"><span class="rs-tier" data-tier="${esc(t.name)}">${esc(t.name)}</span></p>
+            ${input('tr-th-' + i, 'Unlocks at total spend (Ks)', `type="number" inputmode="numeric" min="0" step="1000" value="${t.threshold}" data-th="${i}"`)}
+            <div class="grid grid-cols-[1fr_auto] gap-2 items-end">
+              ${input('tr-v-' + i, 'Discount', `type="number" inputmode="decimal" min="0" step="0.5" value="${t.value}" data-v="${i}"`)}
+              <div><label class="sr-only" for="tr-type-${i}">${esc(t.name)} discount type</label><select id="tr-type-${i}" class="ad-input" data-type="${i}" style="width:auto"><option value="percent" ${t.type === 'percent' ? 'selected' : ''}>% off</option><option value="amount" ${t.type === 'amount' ? 'selected' : ''}>Ks off</option></select></div>
+            </div>
+            <p class="text-xs text-on-surface-variant mt-3" data-preview="${i}">${tierText(t)}</p>
+            <p class="text-xs mt-2"><span class="rs-num">${counts[t.name] || 0}</span> customer${counts[t.name] === 1 ? '' : 's'} at this tier now</p>
+          </article>`).join('')}</div>
+          <p class="ad-err mt-3" id="pr-tier-err" hidden></p>
+          <button class="ad-btn dark mt-4" id="pr-save-tiers">Save membership</button>
+        </section>
+
+        <section class="ad-sec" aria-labelledby="pr-b">
+          <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+            <div><h2 class="ad-h2" id="pr-b">Bundles</h2><p class="text-sm text-on-surface-variant mt-1">Buy every piece in a bundle (any colour or size) and those pieces get the bundle’s discount.</p></div>
+            <button class="ad-btn dark" id="pr-add-bundle" ${products.length < 2 ? 'disabled title="Import products first"' : ''}><span class="material-symbols-outlined text-[18px]" aria-hidden="true">add</span>Add bundle</button>
+          </div>
+          ${draft.bundles.length ? `<div class="grid gap-3">${draft.bundles.map((b) => { const items = b.items.map(byId).filter(Boolean); const full = items.reduce((n, p) => n + p.price, 0);
+            return `<article class="ad-bundle${b.active ? '' : ' is-hidden'}">
+              <div class="flex -space-x-3 shrink-0">${items.slice(0, 4).map((p) => `<img src="${esc(p.img)}" alt="" class="w-12 h-14 object-cover rounded-md border-2 border-white"/>`).join('')}</div>
+              <div class="min-w-0 flex-1"><h3 class="font-semibold text-sm">${esc(b.name)} <span class="rs-save">${b.percent}% off</span></h3>
+                <p class="text-xs text-on-surface-variant truncate">${items.map((p) => esc(p.name)).join(' + ') || 'Its products were removed'}</p>
+                ${items.length ? `<p class="text-xs mt-1 rs-num">Full set <s>${fmt(full)}</s> → <strong>${fmt(full - Math.round(full * b.percent / 100))}</strong></p>` : ''}</div>
+              <div class="ad-prod-actions"><label class="ad-toggle"><input type="checkbox" data-bactive="${esc(b.id)}" ${b.active ? 'checked' : ''}/><span></span>On shop</label>
+                <button class="ad-btn sm" data-bedit="${esc(b.id)}"><span class="material-symbols-outlined text-[16px]" aria-hidden="true">edit</span>Edit</button></div>
+            </article>`; }).join('')}</div>` : emptyHtml('redeem', 'No bundles yet', 'Pair pieces that go together, e.g. a jacket and trousers for 10% off.')}
+        </section>
+
+        <section class="ad-sec" aria-labelledby="pr-mem">
+          <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+            <div><h2 class="ad-h2" id="pr-mem">Members</h2><p class="text-sm text-on-surface-variant mt-1">Customers by phone number, from orders that are paid, packed, shipped or delivered.</p></div>
+            <div class="ad-chips" role="group" aria-label="Filter members">${['all', ...TIER_ORDER, 'none'].map((k) => `<button class="ad-chip" data-mfilter="${k}" aria-pressed="${state.memberFilter === k}">${k === 'all' ? 'All' : k === 'none' ? 'No tier' : k} <span class="rs-num">${k === 'all' ? members.length : k === 'none' ? members.filter((x) => !x.tier).length : counts[k] || 0}</span></button>`).join('')}</div>
+          </div>
+          ${shown.length ? `<div class="ad-table-wrap"><table class="ad-table"><thead><tr><th scope="col">Customer</th><th scope="col">Phone</th><th scope="col">Paid orders</th><th scope="col" class="text-right">Total spend</th><th scope="col">Tier</th><th scope="col">Next tier</th></tr></thead>
+            <tbody>${shown.map((m) => `<tr><td data-label="Customer"><strong>${esc(m.name)}</strong></td><td data-label="Phone"><a class="underline underline-offset-4" href="tel:${esc(m.phone.replace(/[^\d+]/g, ''))}">${esc(m.phone)}</a></td>
+              <td data-label="Paid orders" class="rs-num">${m.orders}</td><td data-label="Total spend" class="text-right rs-num">${fmt(m.spend)}</td>
+              <td data-label="Tier">${m.tier ? `<span class="rs-tier" data-tier="${m.tier}">${m.tier}</span>` : '<span class="text-xs text-on-surface-variant">—</span>'}</td>
+              <td data-label="Next tier" class="text-xs">${m.next ? `${esc(m.next.name)} in <span class="rs-num">${fmt(m.next.threshold - m.spend)}</span>` : m.tier ? 'Top tier' : '—'}</td></tr>`).join('')}</tbody></table></div>`
+            : emptyHtml('workspace_premium', 'No customers here yet', 'Customers appear once an order of theirs is marked Paid.')}
+        </section>`;
+
+      // Tier inputs update the preview as you type; Save validates and stores the lot
+      const readTiers = () => draft.tiers.map((t, i) => ({ name: t.name, threshold: Number($(`[data-th="${i}"]`, main).value) || 0, value: Number($(`[data-v="${i}"]`, main).value) || 0, type: $(`[data-type="${i}"]`, main).value }));
+      $$('#pr-tiers input, #pr-tiers select', main).forEach((el) => el.addEventListener('input', () => readTiers().forEach((t, i) => { $(`[data-preview="${i}"]`, main).innerHTML = tierText(t); })));
+      $('#pr-save-tiers', main).addEventListener('click', (e) => {
+        const tiers = readTiers();
+        const on = tiers.filter((t) => t.threshold > 0 && t.value > 0);
+        const err = $('#pr-tier-err', main);
+        let msg = '';
+        for (let i = 1; i < on.length; i++) if (on[i].threshold <= on[i - 1].threshold) msg = on[i].name + ' must need a higher spend than ' + on[i - 1].name + '.';
+        if (tiers.some((t) => t.type === 'percent' && t.value > 90)) msg = 'A % discount can be at most 90%.';
+        if ($('#pr-on', main).checked && !on.length) msg = 'Set a spend and a discount for at least one tier, or switch membership off.';
+        err.hidden = !msg; err.textContent = msg;
+        if (msg) return;
+        busy(e.currentTarget, async () => {
+          await savePromotions({ ...promo, membership: $('#pr-on', main).checked, tiers });
+          toast(state.promotions.membership ? 'Membership saved and live on the shop' : 'Membership saved (switched off)');
+          render();
+        });
+      });
+      $('#pr-add-bundle', main).addEventListener('click', () => editBundle(null));
+      $$('[data-bedit]', main).forEach((b) => b.addEventListener('click', () => editBundle(promo.bundles.find((x) => x.id === b.dataset.bedit))));
+      $$('[data-bactive]', main).forEach((box) => box.addEventListener('change', async () => {
+        box.disabled = true;
+        try {
+          await savePromotions({ ...promo, bundles: promo.bundles.map((b) => (b.id === box.dataset.bactive ? { ...b, active: box.checked } : b)) });
+          toast(box.checked ? 'Bundle is on the shop' : 'Bundle paused');
+          box.closest('.ad-bundle').classList.toggle('is-hidden', !box.checked);
+        } catch (err) { box.checked = !box.checked; if (err.message !== 'Signed out') toast(err.message, 'error'); }
+        box.disabled = false;
+      }));
+      $$('[data-mfilter]', main).forEach((b) => b.addEventListener('click', () => { state.memberFilter = b.dataset.mfilter; VIEWS_RENDER.promotions(main); bindCommon(main); $(`[data-mfilter="${b.dataset.mfilter}"]`, main).focus(); }));
+    },
+
     enquiries(main) {
       const all = state.enquiries;
       const f = state.enquiryFilter;
@@ -438,6 +551,95 @@
     },
   };
 
+  // ---------------------------------------------------------------- promotions: members, save, bundle editor
+  const TIER_ORDER = ['Silver', 'Gold', 'Platinum'];
+  const SPEND_STATUSES = ['Paid', 'Packed', 'Shipped', 'Delivered'];
+  // Same phone matching as the Sheet: digits only, without a leading 95 or 0
+  const phoneKey = (p) => String(p || '').replace(/\D/g, '').replace(/^(95|0)+/, '');
+
+  function memberList() {
+    const promo = state.promotions;
+    const live = promo.tiers.filter((t) => t.threshold > 0 && t.value > 0);
+    const byPhone = {};
+    (state.orders || []).forEach((o) => {
+      const k = phoneKey(o.phone);
+      if (k.length < 6 || !SPEND_STATUSES.includes(o.status)) return;
+      const m = byPhone[k] || (byPhone[k] = { phone: o.phone, name: o.firstName + ' ' + o.lastName, orders: 0, spend: 0, last: '' });
+      m.orders++; m.spend += o.total;
+      if (o.date > m.last) { m.last = o.date; m.name = o.firstName + ' ' + o.lastName; m.phone = o.phone; }
+    });
+    return Object.values(byPhone).map((m) => {
+      const tier = live.filter((t) => m.spend >= t.threshold).pop();
+      return { ...m, tier: tier ? tier.name : '', next: live.find((t) => m.spend < t.threshold) || null };
+    }).sort((a, b) => b.spend - a.spend);
+  }
+
+  async function savePromotions(next) {
+    const out = await api('promotions.save', { promotions: next });
+    state.promotions = out.promotions;
+    return out.promotions;
+  }
+
+  function editBundle(b) {
+    const isNew = !b;
+    const products = state.products.filter((p) => p.active || (b && b.items.includes(p.id)));
+    const data = b ? JSON.parse(JSON.stringify(b)) : { name: '', items: [], percent: 10, active: true };
+    const box = panel(`<h2 class="font-display-lg text-3xl mb-6 pr-10">${isNew ? 'Add bundle' : 'Edit bundle'}</h2>
+      <form id="bu-form" class="ad-form" novalidate>
+        <div class="grid grid-cols-[1fr_140px] gap-4">
+          ${input('bu-name', 'Bundle name', `value="${esc(data.name)}" required placeholder="e.g. The Office Set" maxlength="80"`)}
+          ${input('bu-pct', 'Discount (%)', `type="number" inputmode="decimal" min="1" max="90" step="0.5" value="${data.percent}" required`)}
+        </div>
+        <fieldset><legend class="ad-label">Pieces in the bundle <span class="font-normal text-on-surface-variant">(pick 2 to 6)</span></legend>
+          <label class="ad-search mb-3" style="max-width:none"><span class="material-symbols-outlined" aria-hidden="true">search</span><span class="sr-only">Search pieces</span><input type="search" id="bu-q" placeholder="Search pieces"/></label>
+          <div class="ad-pick" id="bu-list">${products.map((p) => `<label class="ad-pick-item" data-name="${esc(p.name.toLowerCase())}"><input type="checkbox" value="${esc(p.id)}" ${data.items.includes(p.id) ? 'checked' : ''}/>
+            <span><img src="${esc(p.img)}" alt=""/><span class="min-w-0"><span class="block text-sm truncate">${esc(p.name)}</span><span class="block text-xs text-on-surface-variant rs-num">${fmt(p.price)}${p.soldOut ? ' · sold out' : ''}</span></span></span></label>`).join('')}</div>
+          <p class="ad-err" id="bu-items-msg" hidden></p></fieldset>
+        <p class="ad-note" id="bu-preview" aria-live="polite"></p>
+        <label class="ad-toggle"><input type="checkbox" id="bu-active" ${data.active ? 'checked' : ''}/><span></span>Show on shop</label>
+        <div class="flex flex-wrap gap-3 justify-between pt-2">
+          ${isNew ? '<span></span>' : '<button type="button" class="ad-btn danger" id="bu-delete"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">delete</span>Delete</button>'}
+          <div class="flex gap-3"><button type="button" class="ad-btn" data-close>Cancel</button><button type="submit" class="ad-btn dark">${isNew ? 'Add bundle' : 'Save bundle'}</button></div>
+        </div>
+      </form>`, { label: isNew ? 'Add bundle' : 'Edit ' + data.name });
+
+    const picked = () => $$('#bu-list input:checked', box).map((i) => i.value);
+    const preview = () => {
+      const items = picked().map((id) => state.products.find((p) => p.id === id)).filter(Boolean);
+      const pct = Number($('#bu-pct', box).value) || 0;
+      const full = items.reduce((n, p) => n + p.price, 0);
+      $('#bu-preview', box).innerHTML = items.length < 2 ? '<span class="material-symbols-outlined" aria-hidden="true">info</span>Pick at least two pieces to see the saving.'
+        : `<span class="material-symbols-outlined" aria-hidden="true">redeem</span><span>A full set costs <s class="rs-num">${fmt(full)}</s> <strong class="rs-num">${fmt(full - Math.round(full * pct / 100))}</strong> — the customer saves <strong class="rs-num">${fmt(Math.round(full * pct / 100))}</strong>.</span>`;
+    };
+    preview();
+    $$('#bu-list input', box).forEach((i) => i.addEventListener('change', () => {
+      // Stop at six pieces
+      if (picked().length > 6) { i.checked = false; toast('A bundle can have up to 6 pieces', 'info'); }
+      preview();
+    }));
+    $('#bu-pct', box).addEventListener('input', preview);
+    $('#bu-q', box).addEventListener('input', (e) => { const q = e.target.value.trim().toLowerCase(); $$('.ad-pick-item', box).forEach((el) => { el.hidden = !!q && !el.dataset.name.includes(q); }); });
+
+    if (!isNew) $('#bu-delete', box).addEventListener('click', async () => {
+      if (!await confirmBox('Delete ' + data.name + '?', 'It disappears from the shop. Orders already placed keep their discount.', 'Delete')) return editBundle(b);
+      const ok = await busy(null, async () => { await savePromotions({ ...state.promotions, bundles: state.promotions.bundles.filter((x) => x.id !== data.id) }); return true; });
+      if (ok) { toast(data.name + ' deleted'); render(); }
+    });
+
+    $('#bu-form', box).addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = $('#bu-name', box), pct = $('#bu-pct', box);
+      const items = picked();
+      const ok = [fieldError(name, !name.value.trim() && 'Give the bundle a name.'), fieldError(pct, !(Number(pct.value) >= 1 && Number(pct.value) <= 90) && 'Use a discount between 1 and 90%.')].every(Boolean);
+      const itemsMsg = $('#bu-items-msg', box);
+      itemsMsg.hidden = items.length >= 2; itemsMsg.textContent = items.length >= 2 ? '' : 'Pick at least two pieces.';
+      if (!ok || items.length < 2) return ($('[aria-invalid=true]', box) || $('#bu-list input', box)).focus();
+      const next = { id: data.id, name: name.value.trim(), items, percent: Number(pct.value), active: $('#bu-active', box).checked };
+      const bundles = isNew ? [...state.promotions.bundles, next] : state.promotions.bundles.map((x) => (x.id === data.id ? next : x));
+      busy($('button[type=submit]', e.target), async () => { await savePromotions({ ...state.promotions, bundles }); toast(next.name + (isNew ? ' added' : ' saved')); closePanel(); render(); });
+    });
+  }
+
   // ---------------------------------------------------------------- orders: table, detail, save
   function orderTable(list) {
     return `<div class="ad-table-wrap"><table class="ad-table clickable"><thead><tr><th scope="col">Order</th><th scope="col">Date</th><th scope="col">Customer</th><th scope="col">Town</th><th scope="col" class="text-right">Total</th><th scope="col">Status</th></tr></thead>
@@ -487,6 +689,11 @@
 
       <section class="ad-sec"><h3 class="ad-h3">Items</h3>
         <ul class="text-sm divide-y divide-dashed divide-black/10">${o.items.map((i) => `<li class="flex justify-between gap-4 py-2"><span>${esc(i.name)}${i.qty ? ` — ${esc(i.color)}, ${esc(i.size)} <strong>× ${i.qty}</strong>` : ''}</span>${i.qty ? `<span class="rs-num whitespace-nowrap">${fmt(i.price * i.qty)}</span>` : ''}</li>`).join('')}</ul>
+        ${o.bundleDiscount || o.memberDiscount ? `<div class="text-sm pt-3 border-t border-black/10 mt-1 space-y-1">
+          <p class="flex justify-between"><span>Subtotal</span><span class="rs-num">${fmt(o.subtotal)}</span></p>
+          ${o.discountDetails ? o.discountDetails.split('\n').map((l) => `<p class="flex justify-between text-emerald-800"><span>${esc(l.replace(/: −\d+ Ks$/, ''))}</span><span class="rs-num">−${fmt(Number((l.match(/−(\d+) Ks$/) || [0, 0])[1]))}</span></p>`).join('') : ''}
+        </div>` : ''}
+        ${o.memberTier && !o.memberDiscount ? `<p class="text-xs text-on-surface-variant mt-2">Customer was <span class="rs-tier" data-tier="${esc(o.memberTier)}">${esc(o.memberTier)}</span> when ordering.</p>` : ''}
         <p class="flex justify-between font-semibold pt-3 border-t border-black/10 mt-1"><span>Total</span><span class="rs-num">${fmt(o.total)}</span></p>
         ${o.notes ? `<p class="text-sm mt-4 p-3 bg-black/[0.03] rounded"><span class="rs-label mb-1">Customer note</span>${esc(o.notes)}</p>` : ''}
       </section>
@@ -533,10 +740,14 @@
   }
 
   function exportCsv(list) {
-    const cols = [['Order code', 'code'], ['Date', (o) => o.date], ['Status', 'status'], ['First name', 'firstName'], ['Last name', 'lastName'], ['Phone', 'phone'], ['Email', 'email'],
+    const pad = (n) => String(n).padStart(2, '0');
+    const localTime = (iso) => { const d = new Date(iso); return isNaN(d) ? iso : `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+    // Excel drops the leading 0 of a phone number unless it's written as text: ="09…" (digits only, so it's safe)
+    const phoneText = (o) => (/^[+0-9 ()-]+$/.test(o.phone) ? { raw: '="' + o.phone + '"' } : o.phone);
+    const cols = [['Order code', 'code'], ['Date', (o) => localTime(o.date)], ['Status', 'status'], ['First name', 'firstName'], ['Last name', 'lastName'], ['Phone', phoneText], ['Email', 'email'],
       ['Street', 'street'], ['Apartment', 'apartment'], ['Town', 'city'], ['State', 'state'], ['Items', (o) => o.items.map((i) => i.qty ? `${i.name} - ${i.color}, ${i.size} x ${i.qty}` : i.name).join('; ')],
       ['Total (Ks)', 'total'], ['Courier', 'courier'], ['Tracking', 'tracking'], ['Delivery date', 'deliveryDate']];
-    const cell = (v) => { const s = String(v == null ? '' : v); return /[",\n]/.test(s) || /^[=+\-@]/.test(s) ? '"' + (/^[=+\-@]/.test(s) ? "'" : '') + s.replace(/"/g, '""') + '"' : s; };
+    const cell = (v) => { if (v && v.raw) return v.raw; const s = String(v == null ? '' : v); return /[",\n]/.test(s) || /^[=+\-@]/.test(s) ? '"' + (/^[=+\-@]/.test(s) ? "'" : '') + s.replace(/"/g, '""') + '"' : s; };
     const csv = [cols.map((c) => c[0]).join(','), ...list.map((o) => cols.map(([, k]) => cell(typeof k === 'function' ? k(o) : o[k])).join(','))].join('\r\n');
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
