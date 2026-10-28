@@ -1,0 +1,539 @@
+<!DOCTYPE html><html class="scroll-smooth" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>About | RESTYLE</title>
+<script src="https://cdn.tailwindcss.com/3.4.16?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed-variant": "#474646",
+                    "on-tertiary-container": "#7d8680",
+                    "inverse-primary": "#c8c6c5",
+                    "on-secondary-fixed-variant": "#4b4739",
+                    "on-primary-container": "#858383",
+                    "surface-container": "#efeeeb",
+                    "secondary-container": "#eae2cf",
+                    "primary": "#000000",
+                    "on-tertiary-fixed": "#151d19",
+                    "tertiary-fixed-dim": "#c0c9c2",
+                    "surface-dim": "#dbdad7",
+                    "inverse-surface": "#30312f",
+                    "on-tertiary": "#ffffff",
+                    "secondary": "#635e4f",
+                    "primary-container": "#1c1b1b",
+                    "on-secondary-container": "#696455",
+                    "primary-fixed-dim": "#c8c6c5",
+                    "outline": "#747878",
+                    "on-primary": "#ffffff",
+                    "on-primary-fixed": "#1c1b1b",
+                    "surface-container-high": "#eae8e5",
+                    "on-surface-variant": "#444748",
+                    "error": "#ba1a1a",
+                    "surface-bright": "#fbf9f6",
+                    "surface-tint": "#5f5e5e",
+                    "tertiary-container": "#151d19",
+                    "surface": "#fbf9f6",
+                    "on-surface": "#1b1c1a",
+                    "surface-container-low": "#f5f3f0",
+                    "tertiary": "#000000",
+                    "secondary-fixed-dim": "#cdc6b4",
+                    "on-error": "#ffffff",
+                    "outline-variant": "#c4c7c7",
+                    "on-background": "#1b1c1a",
+                    "error-container": "#ffdad6",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed": "#eae2cf",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#404944",
+                    "inverse-on-surface": "#f2f0ed",
+                    "background": "#fbf9f6",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed": "#dce5de",
+                    "surface-variant": "#e4e2df",
+                    "surface-container-highest": "#e4e2df",
+                    "on-secondary-fixed": "#1f1b10",
+                    "primary-fixed": "#e5e2e1",
+                    "custom-footer-bg": "#121212"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-xl": "120px",
+                    "margin-mobile": "20px",
+                    "container-max": "1440px",
+                    "stack-md": "40px",
+                    "margin-desktop": "64px",
+                    "gutter": "24px",
+                    "stack-lg": "80px",
+                    "unit": "4px"
+            },
+            "fontFamily": {
+                    "label-md": ["Plus Jakarta Sans"],
+                    "headline-sm": ["Cormorant Garamond"],
+                    "label-caps": ["Plus Jakarta Sans"],
+                    "headline-md": ["Cormorant Garamond"],
+                    "display-lg-mobile": ["Cormorant Garamond"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "display-lg": ["Cormorant Garamond"]
+            },
+            "fontSize": {
+                    "label-md": ["14px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                    "headline-sm": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                    "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "600"}],
+                    "headline-md": ["32px", {"lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                    "display-lg-mobile": ["40px", {"lineHeight": "1.1", "letterSpacing": "0.02em", "fontWeight": "300"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "0.02em", "fontWeight": "300"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(-2deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(-2deg); }
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(18, 18, 18, 0.1);
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(18, 18, 18, 0.05);
+        }
+        .reveal, .reveal-on-scroll, .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active, .reveal-on-scroll.active, .scroll-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .testimonial-card-editorial {
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+    </style>
+<link rel="stylesheet" href="assets/site.css"/>
+<script src="assets/config.js" defer></script>
+<script src="assets/products.js" defer></script>
+<script src="assets/site.js" defer></script>
+</head>
+<body class="bg-background text-on-surface selection:bg-primary selection:text-white overflow-x-hidden" data-page="about">
+<!-- Global TopNavBar (Shared Component) -->
+<a class="rs-skip" href="#main">Skip to content</a>
+<header id="site-header" class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-primary/5 transition-all duration-500 ease-out">
+<div class="flex justify-between items-center h-20 px-5 md:px-16 max-w-[1440px] mx-auto">
+<nav class="hidden md:flex items-center flex-1 gap-6" aria-label="Primary">
+<a class="font-label-caps text-[11px] tracking-widest py-2 border-b text-primary/75 border-transparent hover:text-primary hover:border-primary/30 transition-colors" href="index.html">HOME</a>
+<a class="font-label-caps text-[11px] tracking-widest py-2 border-b text-primary/75 border-transparent hover:text-primary hover:border-primary/30 transition-colors" href="collections.html">COLLECTIONS</a>
+<a class="font-label-caps text-[11px] tracking-widest py-2 border-b text-primary border-primary" href="about.html" aria-current="page">ABOUT</a>
+<a class="font-label-caps text-[11px] tracking-widest py-2 border-b text-primary/75 border-transparent hover:text-primary hover:border-primary/30 transition-colors" href="contact.html">CONTACT</a>
+</nav>
+<div class="md:hidden flex-1 flex items-center"><button class="rs-icon-btn text-primary" data-action="menu" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span class="material-symbols-outlined">menu</span></button></div>
+<div class="flex-1 flex justify-center">
+<a class="font-display-lg text-[22px] sm:text-[28px] md:text-[40px] tracking-[0.15em] sm:tracking-[0.2em] text-primary whitespace-nowrap" href="index.html">RESTYLE</a>
+</div>
+<div class="flex items-center gap-0 sm:gap-2 md:gap-4 text-primary flex-1 justify-end">
+<button class="rs-icon-btn" data-action="search" aria-label="Search"><span class="material-symbols-outlined">search</span></button>
+<a class="rs-icon-btn" href="wishlist.html" aria-label="Wishlist"><span class="material-symbols-outlined">favorite</span><span class="rs-badge" data-count="wish" hidden></span></a>
+<a class="rs-icon-btn" href="cart.html" aria-label="Shopping bag"><span class="material-symbols-outlined">shopping_bag</span><span class="rs-badge" data-count="cart" hidden></span></a>
+<a class="rs-icon-btn !hidden sm:!inline-flex" href="account.html" aria-label="Account"><span class="material-symbols-outlined">person</span></a>
+</div>
+</div>
+<nav id="mobile-menu" class="md:hidden hidden bg-surface border-t border-primary/10 px-5 py-4" aria-label="Mobile">
+<a class="block py-3 font-label-caps text-xs tracking-widest text-primary/75" href="index.html">HOME</a>
+<a class="block py-3 font-label-caps text-xs tracking-widest text-primary/75" href="collections.html">COLLECTIONS</a>
+<a class="block py-3 font-label-caps text-xs tracking-widest text-primary" href="about.html" aria-current="page">ABOUT</a>
+<a class="block py-3 font-label-caps text-xs tracking-widest text-primary/75" href="contact.html">CONTACT</a>
+<a class="block py-3 font-label-caps text-xs tracking-widest text-primary/75" href="account.html">ACCOUNT</a>
+</nav>
+</header>
+<main id="main">
+<!-- Section 1: Hero -->
+<section class="min-h-[80vh] flex flex-col items-center justify-center relative overflow-hidden px-margin-mobile md:px-margin-desktop py-stack-xl">
+<div class="absolute inset-0 z-0 bg-[#F9F8F6]"></div>
+<div class="absolute top-1/2 -left-20 -translate-y-1/2 font-display-lg text-[120px] md:text-[240px] text-primary/5 pointer-events-none select-none tracking-tighter">RE</div>
+<div class="absolute top-1/2 -right-20 -translate-y-1/2 font-display-lg text-[120px] md:text-[240px] text-primary/5 pointer-events-none select-none tracking-tighter">STYLE</div>
+<div class="absolute bottom-10 left-margin-mobile md:left-margin-desktop z-20 font-label-caps text-[10px] tracking-widest opacity-40 animate-bounce">
+            SCROLL TO EXPLORE ↓
+        </div>
+<div class="absolute bottom-10 right-margin-mobile md:right-margin-desktop z-20 font-label-caps text-[10px] tracking-widest opacity-40 text-right">
+            01 — 05
+        </div>
+<div class="relative z-10 max-w-4xl text-center space-y-12">
+<div class="space-y-6">
+<h1 class="font-headline-md tracking-tight leading-tight reveal active text-headline-md md:text-headline-md">At RESTYLE, we believe that clothing should not only look good but feel exceptional</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant reveal active" style="transition-delay: 200ms;">
+                    Inspired by the city. Designed for modern lives.
+                </p>
+</div>
+<div class="relative flex items-center justify-center w-full max-w-[1000px] mx-auto reveal active" style="transition-delay: 400ms;">
+<div class="hidden md:block absolute left-0 w-48 h-64 scale-90 transition-all duration-700">
+<img alt="Look 03" class="w-full h-full object-cover rounded-lg shadow-lg scale-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDN3_Sajl-AnJ1xo1TfirgATXtwxmZkxOzQ6ZA4rjP7bJWyMSarXC6HwnuLtliZ3r0wlIQlj5s-5KI-3Tp7fhfAkEk37v7m_KzWfXRa3kTD3QAAM9ZUis700T4-QwVVWKdUadOjOfeR1ge-jej9h2ZDXycREqkteqOn3T3krlcE2Oig2xGjDF3pF6suwksUpQbyJnywafrcU2_70ayR-qOydn07oxOYgGBo143-msGZAVuctjAXWGpEluGjP_kQKc3TFItRKZQDUTFOug">
+</div>
+<div class="relative w-full z-10 group max-w-xs rounded-lg">
+<div class="absolute top-[30%] -left-8 md:-left-32 flex items-center z-20">
+<div class="p-4 w-40 md:w-48 text-left space-y-2 transition-all duration-500 hover:scale-105 rounded-3xl bg-white/30 backdrop-blur-xl border border-white/20 text-primary"><p class="font-label-caps text-[10px] text-black tracking-widest">PLAID BOXY OVERSHIRT</p><p class="font-headline-sm text-headline-sm text-black">89,000 Ks</p><button class="text-[10px] font-label-caps font-bold border border-primary/20 px-3 py-1.5 rounded-full hover:bg-primary hover:text-white transition-all duration-300 text-black">Quick Add +</button></div>
+<div class="w-8 md:w-32 h-[1px] bg-primary/20"></div>
+<div class="w-4 h-4 bg-white rounded-full relative cursor-pointer border border-primary/20">
+<div class="w-4 h-4 bg-white rounded-full animate-ping absolute inset-0"></div>
+</div>
+</div>
+<img alt="Main Look" class="w-full object-contain drop-shadow-2xl transition-transform duration-700 group-hover:scale-[1.02] animate-float md:h-[500px] rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgBoi9py-BLS0a_FNPCAAd7dz1jUtRrXpoS4RFto1Bbp3qSP1vgCImDrOZ8yBPj-ii1M2LyHSd5VgYdXirLUhB6_ahXdOVH1lB8bqJCokB0uBsIz9ERpaFEJoTaTPWmFcNCxU6Uqt9XHGim1SimW-5StZKQjN1sW6BS96ZaaJ45UW7UQT1aeKdKR7xXX6-Ri-SGlaC8H1gFI_hZcCM5T1Tt_SobyFxSlIRgUtpPlP4PkiMTVsESxnTnzwForg4k_1dzPpAXy4k4-iLqw">
+<div class="absolute bottom-[30%] -right-8 md:-right-32 flex items-center z-20">
+<div class="w-4 h-4 bg-white rounded-full relative cursor-pointer border border-primary/20">
+<div class="w-4 h-4 bg-white rounded-full animate-ping absolute inset-0"></div>
+</div>
+<div class="w-8 md:w-32 h-[1px] bg-primary/20"></div>
+<div class="p-4 w-40 md:w-48 text-left space-y-2 transition-all duration-500 hover:scale-105 rounded-3xl bg-white backdrop-blur text-primary bg-white/30 backdrop-blur-xl border border-white/20"><p class="font-label-caps text-[10px] text-on-surface-variant tracking-widest">WIDE-LEG TAILORED TROUSERS</p><p class="font-headline-sm text-headline-sm">91,500 Ks</p><button class="text-[10px] font-label-caps font-bold border border-primary/20 px-3 py-1.5 rounded-full hover:bg-primary hover:text-white transition-all duration-300">Quick Add +</button></div>
+</div>
+</div>
+<div class="hidden md:block absolute right-0 w-48 h-64 scale-90 transition-all duration-700 hover:opacity-60">
+<img alt="Look 05" class="w-full h-full object-cover rounded-lg shadow-lg scale-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAltgKr0YauasSPIAlpcXotXgOta9OifBuD2tmoeFtrPb4Q69r9ZLyYJiGtbB7KuLfTwfwbnnOhz8rIZhF6v1yH16fIpDGIe3NwBRMX-4etOKQ3BoI9jg2g4dzO9WV0OcAj47AjGQ8o8kbVPl6MDaBcARwVZPBqfPuQLDbrNMY87cIRd3-944Ys4npUr6m0e80t1WiKsGbyovjZhTDb9x2SVWcRCyflJ5kcizSH_hJGekMKhC1sG1HNvZjvg44YGRfpvhMiD6lpt9XORg">
+</div>
+</div>
+</div>
+</section>
+<!-- Section 2: Campaign -->
+<section class="py-stack-lg max-w-container-max mx-auto px-4">
+<div class="group relative w-full aspect-[16/9] md:aspect-[21/9] rounded-3xl overflow-hidden reveal-on-scroll shadow-2xl active h-[600px]">
+<div class="absolute inset-0 w-full h-full transform scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBv5ZkgtuGTheGnpiKebjpUSiDsP_h3jltAfrbY0jzPd-t-Z-K-RC-pzFmmoROCnpvo0Umtb1NR1x8yKMkJfDCEM89eJmsJHzn_8i5hQUz7T-4H7pJt5errJyYeRJmQuGNlCYv03LsrvVO7Z3fuNEGtxw0UfbM8I1eCU21X0Eil9Nu3N1UgDiccYM8y8FAicexMFGmyAdMeZO43IptfhyZGHxU9EH5PRomzjt_32EyQtgcejYGyVlnYfVu37pn-HhM3kPrgm8T9YdAV9g">
+</div>
+<div class="absolute bottom-8 left-8 z-30 max-w-sm transform group-hover:-translate-y-2 transition-transform duration-700 ease-out">
+<div class="glass p-8 rounded-2xl shadow-xl">
+<h3 class="font-headline-sm text-primary mb-3">City Ready Essentials</h3>
+<p class="font-body-md text-on-surface-variant mb-6">At Restyle, it's not just about fashion; it's about redefining how men experience style.</p>
+<a class="inline-flex items-center gap-2 font-label-caps text-label-caps text-primary hover:gap-4 transition-all duration-300" href="collections.html">
+                        SHOP THE LOOK <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-60 pointer-events-none"></div>
+</div>
+<div class="flex flex-col md:flex-row justify-between items-center py-10 mt-4 border-b border-on-surface/5 reveal-on-scroll active">
+<div class="flex items-center gap-4 mb-4 md:mb-0">
+<div class="w-2 h-2 bg-primary rounded-full"></div>
+<span class="font-label-caps text-[11px] tracking-widest text-on-surface-variant">FEATURING 4 ESSENTIAL PIECES — CURATED FOR RESTYLE</span>
+</div>
+<a class="group flex items-center gap-2 font-label-caps text-label-caps text-primary" href="collections.html">
+                VIEW ALL CAMPAIGNS 
+                <span class="material-symbols-outlined text-[14px] transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300">north_east</span>
+</a>
+</div>
+</section>
+<!-- Section 3: About -->
+<section class="pt-32 pb-stack-xl max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter mb-stack-lg items-center">
+<div class="lg:col-span-3 scroll-reveal active">
+<span class="inline-block border border-primary/10 bg-white/60 backdrop-blur-md px-6 py-2 rounded-full text-label-caps uppercase tracking-[0.2em] text-primary">
+                    ABOUT RESTYLE
+                </span>
+</div>
+<div class="lg:col-span-6 scroll-reveal stagger-1 active">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-white/40 backdrop-blur-sm border border-white/60 rounded-lg">
+<span class="material-symbols-outlined text-espresso/40 text-xl">texture</span>
+</div>
+<h2 class="font-body-md text-body-lg text-slate-charcoal leading-relaxed">
+                        At RESTYLE, we believe that clothing should not only look good but feel exceptional.
+                    </h2>
+</div>
+</div>
+<div class="lg:col-span-3 flex justify-end items-center gap-3 scroll-reveal stagger-2 active">
+<button class="bg-primary text-white font-label-caps text-[11px] py-4 px-10 rounded-full tracking-[0.2em] hover:bg-slate-charcoal transition-all active:scale-95 shadow-lg shadow-primary/10">
+                    EXPLORE COLLECTION
+                </button>
+<button class="w-12 h-12 flex items-center justify-center border border-primary/10 bg-white/60 backdrop-blur-md rounded-full hover:bg-primary hover:text-white transition-all shadow-sm">
+<span class="material-symbols-outlined text-xl">north_east</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<div class="lg:col-span-5 space-y-12 scroll-reveal stagger-1 active">
+<div class="relative aspect-[3/4] overflow-hidden rounded-2xl bg-surface-container shadow-2xl shadow-primary/5">
+<img alt="RESTYLE Store Interior" class="w-full h-full object-cover transition-transform duration-1000 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVc036bzIaje3r6hwKU1GIAEmfq_9Fyx3mRfjr7sIbda_Jg4U9cXu88gmDT2miT2Y90VdT7ronIGVmWgGOpNxuuUogAy4kq8oF4qm54dY2U8p4AMzB2yyvMUa909Evy0NR_EwY6pyX4Cj6hJ-XV2bU4OUd0mXXUoNKhlbFCMFn6fPNAlHiNNO5TdKjalcKR_FLLPEjMFQNFROtslggtuEHiOD113t9IOiLKNOjxehhhJsROKRLAbZEWX4jaSm_n3CEag">
+</div>
+<div class="space-y-8">
+<h3 class="font-headline-sm text-2xl text-slate-charcoal max-w-sm leading-snug">
+                        Elevate Your Everyday Style — Where Confidence Meets Comfort, And Simplicity Turns Into Statement.
+                    </h3>
+<div class="h-[1px] w-full bg-primary/10"></div>
+<div class="grid grid-cols-2 gap-12">
+<div>
+<div class="font-headline-md text-5xl text-primary mb-2">430+</div>
+<div class="font-label-caps text-[10px] tracking-[0.2em] text-on-surface-variant uppercase">Everyday Style</div>
+</div>
+<div>
+<div class="font-headline-md text-5xl text-primary mb-2">311k</div>
+<div class="font-label-caps text-[10px] tracking-[0.2em] text-on-surface-variant uppercase">Worldwide Clients</div>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-7 space-y-gutter scroll-reveal stagger-2 active">
+<div class="bg-white/60 backdrop-blur-xl border border-white/80 p-12 lg:p-20 rounded-3xl relative overflow-hidden">
+<span class="absolute top-4 left-8 text-[180px] font-display-lg text-primary/[0.03] select-none italic leading-none pointer-events-none">“</span>
+<div class="relative z-10 space-y-10">
+<p class="font-body-lg text-xl leading-relaxed text-slate-charcoal/90">
+                            Welcome to Restyle, where sophistication meets innovation in men’s fashion. Founded in May 2021, Restyle was born out of a desire to redefine contemporary menswear, offering a fresh take on timeless classics. We are committed to empowering men to express their individuality through style, combining modern aesthetics with premium craftsmanship.
+                        </p>
+<div class="flex items-center gap-6 pt-4">
+<div class="h-[1px] w-16 bg-espresso/30"></div>
+<span class="font-label-caps text-label-caps tracking-[0.3em] text-espresso uppercase">The Philosophy</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-gutter pt-8">
+<div class="relative aspect-[3/4] overflow-hidden rounded-2xl bg-surface-container group shadow-xl">
+<img alt="Model in charcoal suit" class="w-full h-full object-cover transition-transform duration-1000 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1zHm-xGN07866slKA-hNxmW1XUz59Huk9w0okVpUJnJ3uGs2EK6SwQ4B27GuN5f4HMi8EW6tpKSf1JSzr3iaN75R1jftcPN3mfeYJ67hrQnCx4ragGlMefp0HUcJgc7qbQ2dIcCc-hcjjODkvbfTkDFEEdciBlf1fg7h9aqblzvg57L8cKQPVp0gSVQXpzwZI_4TVU1sfA8c7J9K_oqF49HfaeH3KTAonk4Bnghtq9Nwru4YcfOkE9RvDkb55im3JgeVHKg12OZT3SQ">
+<div class="absolute bottom-6 left-6">
+<span class="bg-white/70 backdrop-blur-md px-4 py-1.5 rounded-full text-[9px] font-label-caps tracking-widest text-primary border border-white/50">
+                                ATELIER TAILORING
+                            </span>
+</div>
+</div>
+<div class="relative aspect-[3/4] overflow-hidden rounded-2xl bg-surface-container mt-12 group shadow-xl">
+<img alt="Model in sand knitwear" class="w-full h-full object-cover transition-transform duration-1000 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoGxKmyo0qsWrg2qBKJifIKgBveEi462JvPPVb_ypGCXc1C0UZzjomF3tCiZDpQ0haUPsRpjVXhZlSQtbDvcjTf0pFvkHAfRrz38dLwmFCb5zqQezVz7Gm9az2O-4JRR8URQnaD9QXYcU0sCIUm1zGKnZs4nbpm_OYP57al5WNEBcTkjxDiJdDXDiqV2BVW8MO2r1Xm31hf0GeHkTsg0ExzB6i6H7Ko__Lvw4ZPgeS_mT9-WTq4MeUeH1gbIaMjwmteYpD1McH7S5Ejg">
+<div class="absolute bottom-6 left-6">
+<span class="bg-white/70 backdrop-blur-md px-4 py-1.5 rounded-full text-[9px] font-label-caps tracking-widest text-primary border border-white/50">
+                                ORGANIC KNITS
+                            </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 4: Testimonials (Updated) -->
+<section class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto text-center mb-stack-xl reveal active">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-[0.4em] mb-6 block">Voices of Bespoke</span>
+<h2 class="font-display-lg text-display-lg md:text-display-lg-mobile text-primary tracking-[0.05em]">Testimonials</h2>
+<div class="w-24 h-px bg-primary mx-auto mt-12 opacity-10"></div>
+</section>
+<!-- Testimonials Section: Staggered/Editorial Layout -->
+<section class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto overflow-hidden pb-stack-xl">
+<div class="grid grid-cols-1 md:grid-cols-12 md:gap-x-12 items-start">
+<!-- Column 1: Left / Larger Cards -->
+<div class="md:col-span-7 flex flex-col gap-24">
+<!-- Card 1 (Large, Prominent) -->
+<div class="testimonial-card-editorial reveal active group relative bg-white/40 backdrop-blur-xl border border-primary/5 p-12 md:p-16 hover:scale-[1.02] hover:-translate-y-4 hover:shadow-2xl overflow-hidden border-primary/10 rounded-3xl">
+<span class="absolute -top-12 -right-8 font-display-lg text-[180px] opacity-[0.03] text-primary pointer-events-none select-none">“</span>
+<div class="relative z-10">
+<div class="flex gap-1 mb-10 opacity-60">
+<span class="material-symbols-outlined text-primary text-[16px]" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="material-symbols-outlined text-primary text-[16px]" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="material-symbols-outlined text-primary text-[16px]" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="material-symbols-outlined text-primary text-[16px]" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="material-symbols-outlined text-primary text-[16px]" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+</div>
+<p class="font-display-lg text-headline-md md:text-[36px] text-on-surface leading-tight mb-12 italic">"I'm absolutely in love with the quality of the clothes! The fabrics are top-notch, and the fit is perfect. Whether it's casual or formal wear, everything I've bought has become a staple in my wardrobe."</p>
+<div class="flex items-center gap-4">
+<div class="w-6 h-px bg-primary opacity-40"></div>
+<div class="flex flex-col">
+<h4 class="font-display-lg text-body-lg font-bold text-primary tracking-wide">Frank McDonald</h4>
+<p class="font-label-caps text-[10px] text-on-surface-variant/60 uppercase tracking-[0.2em]">Customer</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3 (Offset, Wide) -->
+<div class="testimonial-card-editorial reveal group relative bg-white/40 backdrop-blur-xl border border-primary/5 p-10 md:p-14 hover:scale-[1.02] hover:-translate-y-4 hover:shadow-2xl overflow-hidden md:ml-12 active border-primary/10 rounded-3xl" style="transition-delay: 200ms;">
+<span class="absolute -bottom-12 -left-8 font-display-lg text-[160px] opacity-[0.03] text-primary pointer-events-none select-none">“</span>
+<div class="relative z-10">
+<p class="font-display-lg text-headline-sm text-on-surface-variant leading-relaxed mb-10 italic">"I've never felt more confident in what I wear. The designs are modern yet timeless, and the attention to detail is impressive. Every item feels like it was made just for me!"</p>
+<div class="flex items-center gap-4">
+<div class="w-6 h-px bg-primary opacity-40"></div>
+<div class="flex flex-col">
+<h4 class="font-display-lg text-body-lg font-bold text-primary tracking-wide">Melissa Paterson</h4>
+<p class="font-label-caps text-[10px] text-on-surface-variant/60 uppercase tracking-[0.2em]">Customer</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Column 2: Right / Smaller, Staggered Cards -->
+<div class="md:col-span-5 flex flex-col gap-24 md:pt-32">
+<!-- Card 2 (Smaller, Higher Up) -->
+<div class="testimonial-card-editorial reveal group relative bg-white/40 backdrop-blur-xl border border-primary/5 p-10 md:p-12 hover:scale-[1.02] hover:-translate-y-4 hover:shadow-2xl overflow-hidden active border-primary/10 rounded-3xl" style="transition-delay: 100ms;">
+<span class="absolute top-10 right-4 font-display-lg text-[120px] opacity-[0.03] text-primary pointer-events-none select-none">“</span>
+<div class="relative z-10">
+<p class="font-display-lg text-body-lg text-on-surface-variant leading-relaxed mb-10 italic">"The customer service is fantastic! They were quick to respond and helped me pick out the perfect pieces. Fast shipping and beautifully packaged too. I'll definitely be shopping here again!"</p>
+<div class="flex items-center gap-4">
+<div class="w-6 h-px bg-primary opacity-40"></div>
+<div class="flex flex-col">
+<h4 class="font-display-lg text-body-lg font-bold text-primary tracking-wide">Kelly Miller</h4>
+<p class="font-label-caps text-[10px] text-on-surface-variant/60 uppercase tracking-[0.2em]">Customer</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 4 (Standard, Bottom) -->
+<div class="testimonial-card-editorial reveal group relative bg-white/40 backdrop-blur-xl border border-primary/5 p-10 md:p-12 hover:scale-[1.02] hover:-translate-y-4 hover:shadow-2xl overflow-hidden active border-primary/10 rounded-3xl" style="transition-delay: 300ms;">
+<span class="absolute -top-6 -left-4 font-display-lg text-[140px] opacity-[0.03] text-primary pointer-events-none select-none">“</span>
+<div class="relative z-10">
+<p class="font-display-lg text-body-lg text-on-surface-variant leading-relaxed mb-10 italic">"Shopping here has been an amazing experience from start to finish. The quality, fit, and style of the clothes exceeded my expectations, and delivery was super quick. Highly recommend this brand!"</p>
+<div class="flex items-center gap-4">
+<div class="w-6 h-px bg-primary opacity-40"></div>
+<div class="flex flex-col">
+<h4 class="font-display-lg text-body-lg font-bold text-primary tracking-wide">Gregory Tulson</h4>
+<p class="font-label-caps text-[10px] text-on-surface-variant/60 uppercase tracking-[0.2em]">Customer</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Experience CTA Section: Editorial Refinement -->
+<section class="mt-stack-xl px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto reveal active mb-[60px]">
+<div class="relative bg-primary text-white p-12 md:p-24 flex flex-col md:flex-row justify-between items-center gap-12 overflow-hidden rounded-3xl">
+<div class="absolute inset-0 opacity-5 pointer-events-none">
+<div class="w-full h-full border-[20px] border-white m-4"></div>
+</div>
+<div class="max-w-xl relative z-10">
+<h2 class="font-display-lg text-display-lg md:text-headline-md mb-6 text-white leading-tight">Experience the Art of Fitting</h2>
+<p class="font-body-md text-surface-variant opacity-80 max-w-md">Join our community of discerning individuals and redefine your personal style with garments crafted to your unique silhouette.</p>
+</div>
+<button class="relative z-10 bg-white text-primary font-label-caps text-label-caps px-10 py-4 hover:bg-secondary-fixed transition-all duration-300 tracking-[0.2em] uppercase rounded-full text-xl">Book a Consultation</button>
+</div>
+</section>
+</main>
+<!-- Updated Footer Element -->
+<footer aria-labelledby="footer-heading" class="w-full bg-[#121212] pt-stack-xl pb-stack-md text-white overflow-hidden">
+<h2 class="sr-only" id="footer-heading">Footer Navigation</h2>
+<div class="max-w-container-max mx-auto px-6 md:px-margin-desktop">
+<!-- Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-stack-lg">
+<!-- Column 1: Brand & Social -->
+<div class="flex flex-col space-y-8">
+<div class="font-display-lg text-headline-md text-white tracking-tighter">RESTYLE</div>
+<p class="font-body-md text-neutral-400 max-w-xs leading-relaxed">
+                        Redefine Your Style with ReStyle. We craft more than garments; we construct an identity rooted in architectural precision and quiet luxury.
+                    </p>
+<nav aria-label="Social Media Links">
+<ul class="flex items-center gap-5">
+<li>
+<a aria-label="Facebook" class="w-11 h-11 rounded-full bg-white flex items-center justify-center hover:scale-105 hover:bg-neutral-100 transition-all duration-200 cursor-pointer" href="#" rel="noopener noreferrer" target="_blank">
+<svg aria-hidden="true" class="w-5 h-5 text-black" fill="currentColor" viewbox="0 0 24 24">
+<path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"></path>
+</svg>
+</a>
+</li>
+<li>
+<a aria-label="Instagram" class="w-11 h-11 rounded-full bg-white flex items-center justify-center hover:scale-105 hover:bg-neutral-100 transition-all duration-200 cursor-pointer" href="#" rel="noopener noreferrer" target="_blank">
+<svg aria-hidden="true" class="w-5 h-5 text-black" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<rect height="18" rx="5" ry="5" width="18" x="3" y="3"></rect>
+<path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"></path>
+<line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+</svg>
+</a>
+</li>
+<li>
+<a aria-label="TikTok" class="w-11 h-11 rounded-full bg-white flex items-center justify-center hover:scale-105 hover:bg-neutral-100 transition-all duration-200 cursor-pointer" href="#" rel="noopener noreferrer" target="_blank">
+<svg aria-hidden="true" class="w-5 h-5 text-black" fill="currentColor" viewbox="0 0 24 24">
+<path d="M12.525.02c1.31 0 2.591.405 3.666 1.152.145.103.263.239.348.398.085.159.125.337.117.516-.033 1.209.244 2.414.801 3.482.557 1.068 1.412 1.938 2.468 2.51.153.082.285.2.386.344.101.144.164.31.184.485.064 1.082.075 2.17.033 3.252-.01.213-.082.419-.208.592-.126.173-.302.302-.505.371-1.346.458-2.782.521-4.16.184V17.11c.006 1.528-.441 3.022-1.284 4.291-.843 1.269-2.052 2.243-3.473 2.8-.14.055-.29.082-.441.08-.151-.002-.3-.033-.437-.092-1.551-.667-2.826-1.81-3.66-3.282-.834-1.472-1.212-3.164-1.085-4.858.127-1.694.794-3.283 1.914-4.563 1.12-1.28 2.614-2.16 4.288-2.525.186-.04.379-.037.563.01.184.046.352.143.488.28.136.137.23.307.273.494.043.187.037.382-.017.566-.31 1.056-.31 2.176 0 3.232.054.184.06.379.017.566-.043.187-.137.357-.273.494-.136.137-.304.234-.488.28-.184.047-.377.05-.563.01-1.082-.236-2.048.336-2.774 1.152-.726.816-1.158 1.845-1.24 2.944-.082 1.099.163 2.198.704 3.154.541.956 1.369 1.698 2.376 2.132.923-.362 1.708-.995 2.255-1.818.547-.823.837-1.793.833-2.784V1.1c0-.292.116-.571.322-.777A1.098 1.098 0 0112.525.02z"></path>
+</svg>
+</a>
+</li>
+</ul>
+</nav>
+</div>
+<!-- Column 2: Useful Links -->
+<nav aria-label="Useful Links" class="flex flex-col space-y-6">
+<h3 class="font-label-caps text-label-caps tracking-widest text-white uppercase border-b border-white/10 pb-4">Useful Links</h3>
+<ul class="flex flex-col space-y-4">
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="about.html">About Us</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="contact.html">Contact Us</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="collections.html">Products</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="account.html">Login</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="account.html#signup">Sign Up</a></li>
+</ul>
+</nav>
+<!-- Column 3: Custom Area -->
+<nav aria-label="Customer Account Links" class="flex flex-col space-y-6">
+<h3 class="font-label-caps text-label-caps tracking-widest text-white uppercase border-b border-white/10 pb-4">Custom Area</h3>
+<ul class="flex flex-col space-y-4">
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="account.html">My Account</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="info.html?p=tracking">Tracking List</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="info.html?p=privacy">Privacy Policy</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="info.html?p=orders">Orders</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="cart.html">My Cart</a></li>
+</ul>
+</nav>
+<!-- Column 4: More Information & Payments -->
+<div class="flex flex-col space-y-6">
+<h3 class="font-label-caps text-label-caps tracking-widest text-white uppercase border-b border-white/10 pb-4">More Information</h3>
+<p class="font-body-md text-neutral-400 leading-relaxed">
+                        Sign up for our atelier newsletter to receive exclusive updates on seasonal collections and private tailoring sessions.
+                    </p>
+<form class="flex gap-2" data-form="newsletter">
+<label class="sr-only" for="nl-email">Email address</label>
+<input id="nl-email" name="email" type="email" required placeholder="Email Address" class="flex-1 min-w-0 bg-transparent border border-white/20 rounded-lg px-4 py-3 text-sm text-white placeholder:text-neutral-500 focus:ring-1 focus:ring-white focus:border-white"/>
+<button type="submit" class="px-4 border border-white/20 rounded-lg hover:bg-white hover:text-black transition-colors" aria-label="Subscribe"><span class="material-symbols-outlined text-[20px]">arrow_forward</span></button>
+</form>
+<div aria-label="Accepted Payment Methods" class="pt-4 flex flex-wrap gap-4">
+<div class="h-8 w-12 bg-white/10 rounded flex items-center justify-center group hover:bg-white transition-colors duration-500">
+<span class="material-symbols-outlined text-[20px] text-white group-hover:text-primary" data-icon="credit_card">credit_card</span>
+</div>
+<div class="h-8 w-12 bg-white/10 rounded flex items-center justify-center group hover:bg-white transition-colors duration-500">
+<span class="material-symbols-outlined text-[20px] text-white group-hover:text-primary" data-icon="account_balance">account_balance</span>
+</div>
+<div class="h-8 w-12 bg-white/10 rounded flex items-center justify-center group hover:bg-white transition-colors duration-500">
+<span class="material-symbols-outlined text-[20px] text-white group-hover:text-primary" data-icon="payments">payments</span>
+</div>
+<div class="h-8 w-12 bg-white/10 rounded flex items-center justify-center group hover:bg-white transition-colors duration-500">
+<span class="material-symbols-outlined text-[20px] text-white group-hover:text-primary" data-icon="wallet">wallet</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Bar -->
+<div class="border-t border-white/10 pt-8 flex flex-col items-center justify-center">
+<p class="font-label-caps text-[10px] tracking-widest text-neutral-500 text-center">
+                    COPYRIGHT © RESTYLE - DESIGNED BY DIGITAL QUEEN, 2024
+                </p>
+</div>
+</div>
+</footer>
+<script>
+    // Reveal Intersection Observer
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal, .reveal-on-scroll, .scroll-reveal').forEach(el => observer.observe(el));
+</script>
+
+
+</body></html>

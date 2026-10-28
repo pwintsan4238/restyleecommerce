@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Our Collections | RESTYLE</title>
+<script src="https://cdn.tailwindcss.com/3.4.16?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .font-label-caps { font-family: 'Plus Jakarta Sans'; font-size: 12px; line-height: 1.0; letter-spacing: 0.15em; font-weight: 600; }
+        .text-label-caps { font-size: 12px; line-height: 1.0; letter-spacing: 0.15em; font-weight: 600; }
+        
+        .glass-card {
+            background: rgba(239, 236, 230, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .product-hover-action {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .product-card:hover .product-hover-action {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+
+        .staggered-grid > div:nth-child(even) {
+            margin-top: 0;
+        }
+
+        @media (min-width: 1024px) {
+            .staggered-grid > div:nth-child(even) {
+                margin-top: 3rem;
+            }
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#1c1b1b",
+                        "outline": "#747878",
+                        "on-primary-container": "#858383",
+                        "surface-tint": "#5f5e5e",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#000000",
+                        "secondary": "#635e4f",
+                        "on-tertiary": "#ffffff",
+                        "background": "#fbf9f6",
+                        "on-primary-fixed-variant": "#474646",
+                        "on-secondary-fixed": "#1f1b10",
+                        "on-tertiary-container": "#7d8680",
+                        "on-error": "#ffffff",
+                        "on-background": "#1b1c1a",
+                        "inverse-surface": "#30312f",
+                        "inverse-on-surface": "#f2f0ed",
+                        "tertiary-fixed-dim": "#c0c9c2",
+                        "tertiary-container": "#151d19",
+                        "surface-variant": "#e4e2df",
+                        "on-primary-fixed": "#1c1b1b",
+                        "secondary-container": "#eae2cf",
+                        "primary-fixed": "#e5e2e1",
+                        "surface-bright": "#fbf9f6",
+                        "primary-fixed-dim": "#c8c6c5",
+                        "on-tertiary-fixed-variant": "#404944",
+                        "on-surface": "#1b1c1a",
+                        "error-container": "#ffdad6",
+                        "on-secondary-container": "#696455",
+                        "surface": "#fbf9f6",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#f5f3f0",
+                        "surface-container-highest": "#e4e2df",
+                        "surface-container-high": "#eae8e5",
+                        "tertiary-fixed": "#dce5de",
+                        "on-secondary-fixed-variant": "#4b4739",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "inverse-primary": "#c8c6c5",
+                        "secondary-fixed": "#eae2cf",
+                        "outline-variant": "#c4c7c7",
+                        "surface-container": "#efeeeb",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#cdc6b4",
+                        "primary": "#000000",
+                        "on-tertiary-fixed": "#151d19",
+                        "on-surface-variant": "#444748",
+                        "surface-dim": "#dbdad7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-xl": "120px",
+                        "margin-mobile": "20px",
+                        "unit": "4px",
+                        "margin-desktop": "64px",
+                        "stack-lg": "80px",
+                        "gutter": "24px",
+                        "stack-md": "40px",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Cormorant Garamond"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "display-lg": ["Cormorant Garamond"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "label-caps": ["Plus Jakarta Sans"],
+                        "headline-sm": ["Cormorant Garamond"],
+                        "display-lg-mobile": ["Cormorant Garamond"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["32px", {"lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "0.02em", "fontWeight": "300"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                        "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "600"}],
+                        "headline-sm": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "display-lg-mobile": ["40px", {"lineHeight": "1.1", "letterSpacing": "0.02em", "fontWeight": "300"}]
+                    }
+                },
+            },
+        }
+    </script>
+<link rel="stylesheet" href="assets/site.css"/>
+<script src="assets/config.js" defer></script>
+<script src="assets/products.js" defer></script>
+<script src="assets/site.js" defer></script>
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary selection:text-on-primary" data-page="collections">
+<!-- TopNavBar -->
+<a class="rs-skip" href="#main">Skip to content</a>
+<header id="site-header" class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-primary/5 transition-all duration-500 ease-out">
+<div class="flex justify-between items-center h-20 px-5 md:px-16 max-w-[1440px] mx-auto">
+<nav class="hidden md:flex items-center flex-1 gap-6" aria-label="Primary">
+<a class="font-label-caps text-[11px] tracking-widest py-2 border-b text-primary/75 border-transparent hover:text-primary hover:border-primary/30 transition-colors" href="index.html">HOME</a>
+<a class="font-label-caps text-[11px] tracking-widest py-2 border-b text-primary border-primary" href="collections.html" aria-current="page">COLLECTIONS</a>
+<a class="font-label-caps text-[11px] tracking-widest py-2 border-b text-primary/75 border-transparent hover:text-primary hover:border-primary/30 transition-colors" href="about.html">ABOUT</a>
+<a class="font-label-caps text-[11px] tracking-widest py-2 border-b text-primary/75 border-transparent hover:text-primary hover:border-primary/30 transition-colors" href="contact.html">CONTACT</a>
+</nav>
+<div class="md:hidden flex-1 flex items-center"><button class="rs-icon-btn text-primary" data-action="menu" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span class="material-symbols-outlined">menu</span></button></div>
+<div class="flex-1 flex justify-center">
+<a class="font-display-lg text-[22px] sm:text-[28px] md:text-[40px] tracking-[0.15em] sm:tracking-[0.2em] text-primary whitespace-nowrap" href="index.html">RESTYLE</a>
+</div>
+<div class="flex items-center gap-0 sm:gap-2 md:gap-4 text-primary flex-1 justify-end">
+<button class="rs-icon-btn" data-action="search" aria-label="Search"><span class="material-symbols-outlined">search</span></button>
+<a class="rs-icon-btn" href="wishlist.html" aria-label="Wishlist"><span class="material-symbols-outlined">favorite</span><span class="rs-badge" data-count="wish" hidden></span></a>
+<a class="rs-icon-btn" href="cart.html" aria-label="Shopping bag"><span class="material-symbols-outlined">shopping_bag</span><span class="rs-badge" data-count="cart" hidden></span></a>
+<a class="rs-icon-btn !hidden sm:!inline-flex" href="account.html" aria-label="Account"><span class="material-symbols-outlined">person</span></a>
+</div>
+</div>
+<nav id="mobile-menu" class="md:hidden hidden bg-surface border-t border-primary/10 px-5 py-4" aria-label="Mobile">
+<a class="block py-3 font-label-caps text-xs tracking-widest text-primary/75" href="index.html">HOME</a>
+<a class="block py-3 font-label-caps text-xs tracking-widest text-primary" href="collections.html" aria-current="page">COLLECTIONS</a>
+<a class="block py-3 font-label-caps text-xs tracking-widest text-primary/75" href="about.html">ABOUT</a>
+<a class="block py-3 font-label-caps text-xs tracking-widest text-primary/75" href="contact.html">CONTACT</a>
+<a class="block py-3 font-label-caps text-xs tracking-widest text-primary/75" href="account.html">ACCOUNT</a>
+</nav>
+</header>
+<main id="main" class="pt-32 pb-stack-xl">
+<!-- Section 1: Hero Header -->
+<section class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto mb-16">
+<h1 class="font-display-lg text-[32px] md:text-[48px] uppercase tracking-[0.2em] mb-4">OUR COLLECTIONS</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                Curated menswear tailored with architectural precision and timeless minimalism.
+            </p>
+</section>
+<!-- Section 2: Category Filter -->
+<section class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto mb-12">
+<div class="flex flex-wrap gap-3">
+<button class="px-6 py-3 bg-primary text-on-primary font-label-caps text-label-caps tracking-widest rounded-lg">ALL NEW</button>
+<button class="px-6 py-3 bg-surface-container hover:bg-surface-variant transition-colors font-label-caps text-label-caps tracking-widest text-on-surface rounded-lg">TAILORED OUTERWEAR</button>
+<button class="px-6 py-3 bg-surface-container hover:bg-surface-variant transition-colors font-label-caps text-label-caps tracking-widest text-on-surface rounded-lg">OVERSIZED SHIRTS</button>
+<button class="px-6 py-3 bg-surface-container hover:bg-surface-variant transition-colors font-label-caps text-label-caps tracking-widest text-on-surface rounded-lg">WIDE TROUSERS</button>
+<button class="px-6 py-3 bg-surface-container hover:bg-surface-variant transition-colors font-label-caps text-label-caps tracking-widest text-on-surface rounded-lg">KNITWEAR</button>
+</div>
+</section>
+<!-- Section 3: Staggered Product Grid -->
+<section class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter staggered-grid">
+<!-- Product Card 1 -->
+<div class="product-card group bg-[#EFECE6] p-4 rounded-lg border border-[#E2DDD5]/50 shadow-[0_4px_12px_rgba(0,0,0,0.05)] transition-all duration-500">
+<div class="relative aspect-[3/4] overflow-hidden mb-6">
+<img class="product-image w-full h-full object-cover transition-transform duration-700 ease-out rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBm0HAt_DVXxRENHIQhaB_T_Sj4QqnzAxgHZ77yn6K5Z-avTuTd-xm963UXRvF5xfltSsjxT666W-YWF_3iPZ5DcP4tFTws_zV4P0_ONCssSpaZFwyRkyD8kA6Uc2nEnQo9pXOeuR4MLZGpxTPdRjedhSfyD3_GB5FetJCjsqCsB525xoCYTwmIZHFySq7AeZyDgYNJAA3GD7nBWO2he3spphhbwn3y7cootBzZ9rC7tisOZOzoJrJrCRl18oxau8pDXVmI8k_b8f_7A"/>
+<div class="absolute top-4 left-4 flex flex-col gap-2">
+<span class="bg-primary text-on-primary px-3 py-1 font-label-caps text-[10px] tracking-widest">SOLD OUT</span>
+</div>
+<div class="absolute top-4 right-4 flex flex-col gap-2 product-hover-action">
+<button class="w-10 h-10 glass-card flex items-center justify-center hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="favorite">favorite</span>
+</button>
+<button class="w-10 h-10 glass-card flex items-center justify-center hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="visibility">visibility</span>
+</button>
+</div>
+<div class="absolute bottom-0 left-0 w-full p-4 product-hover-action translate-y-2">
+<button class="w-full py-3 glass-card text-primary font-label-caps tracking-[0.2em] hover:bg-white/90 transition-all">RESTOCK NOTIFY</button>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<span class="font-label-caps text-on-surface-variant uppercase text-[10px] tracking-widest">WIDE TROUSERS</span>
+<h3 class="font-headline-sm text-headline-sm">Baggy Flow Jeans</h3>
+<div class="flex justify-between items-center">
+<span class="font-body-md text-primary">83,500 Ks</span>
+<div class="flex gap-1">
+<div class="w-3 h-3 rounded-full" style="background-color: #6C83A4;"></div>
+</div>
+</div>
+<div class="pt-2 border-t border-outline/10 flex gap-2 overflow-x-auto no-scrollbar">
+<span class="font-label-caps text-[10px] text-on-surface-variant">28</span>
+<span class="font-label-caps text-[10px] text-on-surface-variant">30</span>
+<span class="font-label-caps text-[10px] text-on-surface-variant">32</span>
+<span class="font-label-caps text-[10px] text-on-surface-variant">34</span>
+</div>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="product-card group bg-[#EFECE6] p-4 rounded-lg border border-[#E2DDD5]/50 shadow-[0_4px_12px_rgba(0,0,0,0.05)] transition-all duration-500">
+<div class="relative aspect-[3/4] overflow-hidden mb-6">
+<img class="product-image w-full h-full object-cover transition-transform duration-700 ease-out rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTKcA6KIJ5_6ZrjbX43eDRGz10Bp0_hhKIq-HeMWkZeP-slZXF3SFPZ00G5nTLnd3mdNbb9zZs_XO5XUr8p7u9BEDPmKM5bA8MMZYTiYIw4Qa8LzDyIzspux5yHv9RVoDPj4Augwu9TMZSSVAbDZ-COpG0QJqDX1cnKyHmKI4fTdrJqjIG1D8wyPSbvrpqtqHxtWTc27bQUq5vttUxGdm2hTxr1iPJbA_6Fima0MJk-_dxiqy8asTjI6Acv2iOMW9wVIaMz7wDrAW6zw"/>
+<div class="absolute top-4 left-4">
+<span class="glass-card px-3 py-1 font-label-caps text-[10px] tracking-widest text-primary">NEW</span>
+</div>
+<div class="absolute top-4 right-4 flex flex-col gap-2 product-hover-action">
+<button class="w-10 h-10 glass-card flex items-center justify-center hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="favorite">favorite</span>
+</button>
+<button class="w-10 h-10 glass-card flex items-center justify-center hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="visibility">visibility</span>
+</button>
+</div>
+<div class="absolute bottom-0 left-0 w-full p-4 product-hover-action">
+<button class="w-full py-3 glass-card text-primary font-label-caps tracking-[0.2em] hover:bg-white/90 transition-all">QUICK ADD</button>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<span class="font-label-caps text-on-surface-variant uppercase text-[10px] tracking-widest">TAILORED OUTERWEAR</span>
+<h3 class="font-headline-sm text-headline-sm">Black Coat Form Jacket</h3>
+<div class="flex justify-between items-center">
+<span class="font-body-md text-primary">135,000 Ks</span>
+<div class="flex gap-1">
+<div class="w-3 h-3 rounded-full bg-black"></div>
+</div>
+</div>
+<div class="pt-2 border-t border-outline/10 flex gap-2">
+<span class="font-label-caps text-[10px] text-on-surface-variant">L</span>
+<span class="font-label-caps text-[10px] text-on-surface-variant">M</span>
+</div>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="product-card group bg-[#EFECE6] p-4 rounded-lg border border-[#E2DDD5]/50 shadow-[0_4px_12px_rgba(0,0,0,0.05)] transition-all duration-500">
+<div class="relative aspect-[3/4] overflow-hidden mb-6">
+<img class="product-image w-full h-full object-cover transition-transform duration-700 ease-out rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAoBCnYBONDBpNKf9Dx52mkIDpWOoskGGO2wAxPyqZGwrjkG8kbcDgPHJoSPpIEp3Lg2YgDZjwD3vKmkzgDKngj4bxQhg95k5hhjXDTa-rdfgV81ftSievX1_EOa4SsVkEYWJycnd0yHm5gInCTKDOXF2wnKyc1GqKQJrYTT83xixu5gPNaNlswBF-5VWpQmqF24T1dMq8PIQFaFQCYzbGROBB59m0oFgBG79wllGXPzNJDtz9USZd874yulG2m7kDxXvOzhk2xgRnyw"/>
+<div class="absolute top-4 left-4">
+<span class="bg-primary text-on-primary px-3 py-1 font-label-caps text-[10px] tracking-widest">SOLD OUT</span>
+</div>
+<div class="absolute top-4 right-4 flex flex-col gap-2 product-hover-action">
+<button class="w-10 h-10 glass-card flex items-center justify-center hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="favorite">favorite</span>
+</button>
+</div>
+<div class="absolute bottom-0 left-0 w-full p-4 product-hover-action">
+<button class="w-full py-3 glass-card text-primary font-label-caps tracking-[0.2em] hover:bg-white/90 transition-all">NOTIFY ME</button>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<span class="font-label-caps text-on-surface-variant uppercase text-[10px] tracking-widest">TAILORED OUTERWEAR</span>
+<h3 class="font-headline-sm text-headline-sm">Black Cropped Blazer Set</h3>
+<div class="flex justify-between items-center">
+<span class="font-body-md text-primary">85,500 Ks</span>
+<div class="flex gap-1">
+<div class="w-3 h-3 rounded-full" style="background-color: #5A5A5A;"></div>
+</div>
+</div>
+<div class="pt-2 border-t border-outline/10 flex gap-2">
+<span class="font-label-caps text-[10px] text-on-surface-variant">L</span>
+<span class="font-label-caps text-[10px] text-on-surface-variant">M</span>
+</div>
+</div>
+</div>
+<!-- Product Card 4 -->
+<div class="product-card group bg-[#EFECE6] p-4 rounded-lg border border-[#E2DDD5]/50 shadow-[0_4px_12px_rgba(0,0,0,0.05)] transition-all duration-500">
+<div class="relative aspect-[3/4] overflow-hidden mb-6">
+<img class="product-image w-full h-full object-cover transition-transform duration-700 ease-out rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjkZBvgiSw2PCjBoQ40FpNiKPCV_0onFUm7FxpUDgdlK3uTLOmwJLmUwmCCKUVZQXdxb7csttA3RLh0YP9sDdWftzpKgRx4lz5Ci4S_cm6lLGjYvPQx-inPXxq2awSQv0PR3Gqo3omB1HSFBjujfBQgcyx5QpbLhRIP3F1RRIVZWj5mBusGEtG27TN8NrokV_E-fE_VwvqyM1_7wF4VtN1lj8MWs7Ti0FQIPbNGkE95Ku46DxAD5gkrAre87EkqKkuww6IZp1i_5XJ7g"/>
+<div class="absolute top-4 left-4">
+<span class="glass-card px-3 py-1 font-label-caps text-[10px] tracking-widest text-primary uppercase">RESTOCKED</span>
+</div>
+<div class="absolute top-4 right-4 flex flex-col gap-2 product-hover-action">
+<button class="w-10 h-10 glass-card flex items-center justify-center hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="shopping_cart">shopping_cart</span>
+</button>
+</div>
+<div class="absolute bottom-0 left-0 w-full p-4 product-hover-action">
+<button class="w-full py-3 glass-card text-primary font-label-caps tracking-[0.2em] hover:bg-white/90 transition-all">QUICK ADD</button>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<span class="font-label-caps text-on-surface-variant uppercase text-[10px] tracking-widest">TAILORED OUTERWEAR</span>
+<h3 class="font-headline-sm text-headline-sm">Black Culture Blazer</h3>
+<div class="flex justify-between items-center">
+<span class="font-body-md text-primary">145,000 Ks</span>
+<div class="flex gap-1">
+<div class="w-3 h-3 rounded-full bg-black"></div>
+</div>
+</div>
+<div class="pt-2 border-t border-outline/10 flex gap-2">
+<span class="font-label-caps text-[10px] text-on-surface-variant">L</span>
+<span class="font-label-caps text-[10px] text-on-surface-variant">M</span>
+</div>
+</div>
+</div>
+<!-- Product Card 5 -->
+<div class="product-card group bg-[#EFECE6] p-4 rounded-lg border border-[#E2DDD5]/50 shadow-[0_4px_12px_rgba(0,0,0,0.05)] transition-all duration-500">
+<div class="relative aspect-[3/4] overflow-hidden mb-6">
+<img class="product-image w-full h-full object-cover transition-transform duration-700 ease-out rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmlwavBOvgam19IRSfca-qnI9V8VN0q-WIGUB6iA00Ralwb_Odmw4HoU5xuHfMjqLX9EKE3lcsBw5NVLvjoS3m_1uNBN-mlovFmztd6hqnBTa7rEzANK9gWJ1vRncbgGNwPJ0DEzt3NnazORo_qq1CWAKOuwUbXNN7S7i6EzlqSwoBQ01JvL6sNkOKBf24pZ_7mubFIEmsaCuU0lsbsYYX-hkOrMbD0aFaLlv8y6TBGcwgbdYTWbyFfCZc-SXKKkKt3xQ6GFtH-qV7ow"/>
+<div class="absolute top-4 left-4">
+<span class="bg-primary text-on-primary px-3 py-1 font-label-caps text-[10px] tracking-widest">SOLD OUT</span>
+</div>
+<div class="absolute bottom-0 left-0 w-full p-4 product-hover-action">
+<button class="w-full py-3 glass-card text-primary font-label-caps tracking-[0.2em]">WAITLIST</button>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<span class="font-label-caps text-on-surface-variant uppercase text-[10px] tracking-widest">TAILORED OUTERWEAR</span>
+<h3 class="font-headline-sm text-headline-sm">Black Diamond Jacket</h3>
+<div class="flex justify-between items-center">
+<span class="font-body-md text-primary">145,000 Ks</span>
+<div class="w-3 h-3 rounded-full" style="background-color: #606060;"></div>
+</div>
+<div class="pt-2 border-t border-outline/10 flex gap-2">
+<span class="font-label-caps text-[10px] text-on-surface-variant">L</span>
+<span class="font-label-caps text-[10px] text-on-surface-variant">M</span>
+</div>
+</div>
+</div>
+<!-- Product Card 6 -->
+<div class="product-card group bg-[#EFECE6] p-4 rounded-lg border border-[#E2DDD5]/50 shadow-[0_4px_12px_rgba(0,0,0,0.05)] transition-all duration-500">
+<div class="relative aspect-[3/4] overflow-hidden mb-6">
+<img class="product-image w-full h-full object-cover transition-transform duration-700 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAy2FokrxLnQjjOSeBeR0TAPTgeEzSEcXNCnAr6J-gT9XdpthX-60GE0Ka8jEoy4E84OXfJ6V-0kmpNYMtKVnS-OIm8Nm8VqOAb7F5tUWHS974gZ-zpv-75ClUk8izDYst0immbxx8KSZsA70XyPF2vmxC0YPLsjeGGosm8an_hLaegmeorRa8xeeHEyeTJ44Lf8JPPLCCIV7-H8HvkIpJRYfZLrPapYaZzwJgDhAizHN8wsHqWKZW5GdgD6M5Ir_gilYNn27QV_D7B6w"/>
+<div class="absolute top-4 left-4">
+<span class="bg-primary text-on-primary px-3 py-1 font-label-caps text-[10px] tracking-widest">SOLD OUT</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<span class="font-label-caps text-on-surface-variant uppercase text-[10px] tracking-widest">TAILORED OUTERWEAR</span>
+<h3 class="font-headline-sm text-headline-sm">Black Faux Leather Jacket</h3>
+<div class="flex justify-between items-center">
+<span class="font-body-md text-primary">125,000 Ks</span>
+<div class="w-3 h-3 rounded-full" style="background-color: #686868;"></div>
+</div>
+<div class="pt-2 border-t border-outline/10 flex gap-2">
+<span class="font-label-caps text-[10px] text-on-surface-variant">L</span>
+<span class="font-label-caps text-[10px] text-on-surface-variant">M</span>
+</div>
+</div>
+</div>
+<!-- Product Card 7 -->
+<div class="product-card group bg-[#EFECE6] p-4 rounded-lg border border-[#E2DDD5]/50 shadow-[0_4px_12px_rgba(0,0,0,0.05)] transition-all duration-500">
+<div class="relative aspect-[3/4] overflow-hidden mb-6 rounded-lg">
+<img class="product-image w-full h-full object-cover transition-transform duration-700 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVJQQooDzN35XPtPEMecAj4PQXtI3uMxjfoBM0YzxFIw__Z-P2MHIlUcrqHIk8x5hKr0W8QrPwE1JnavjDhS5yzL8UXcdSaPbL81-atdN7_ttSDgMzQxBSmj0-gjpI0DX6SKApeJfAr09D51YIqUHuP9jbHTJ21pevrZ1BPO7xEzNUr4yEqWdo73QRWnmdNzwcgB8SONCCPmJDHkUu71wF8dKwmPJkPBF3QfyTZEVXXmgwf5PjijRQ0PA15lLubqig571_hAjY1hFBVw"/>
+<div class="absolute top-4 left-4">
+<span class="bg-primary text-on-primary px-3 py-1 font-label-caps text-[10px] tracking-widest">SOLD OUT</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<span class="font-label-caps text-on-surface-variant uppercase text-[10px] tracking-widest">TAILORED OUTERWEAR</span>
+<h3 class="font-headline-sm text-headline-sm">Black Jacket</h3>
+<div class="flex justify-between items-center">
+<span class="font-body-md text-primary">78,500 Ks</span>
+<div class="w-3 h-3 rounded-full" style="background-color: #5C5C5C;"></div>
+</div>
+<div class="pt-2 border-t border-outline/10 flex gap-2">
+<span class="font-label-caps text-[10px] text-on-surface-variant">L</span>
+<span class="font-label-caps text-[10px] text-on-surface-variant">M</span>
+</div>
+</div>
+</div>
+<!-- Product Card 8 -->
+<div class="product-card group bg-[#EFECE6] p-4 rounded-lg border border-[#E2DDD5]/50 shadow-[0_4px_12px_rgba(0,0,0,0.05)] transition-all duration-500">
+<div class="relative aspect-[3/4] overflow-hidden mb-6">
+<img class="product-image w-full h-full object-cover transition-transform duration-700 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdRyHbyisMT-38lXVkGEETcmK-m6GKEzk_-sFzEIyGDPw11hVu4i_VB5Lorb0UppVdVc_gSO21gIPViDty34Ksxkyd7Ppy3uDMcSE0pDpbJ2BBBNTnN3AVkerr1VfDgGCJzsgDHJ2C2gbCR75EsYnhaSumqLmiXLPN8YtelTGvp5amq941gIck1KcAoguXP-BNUDLu4BNwb0Voh7c0dxw4tCkLUR14mrZREs_1UGoPB_UOA2DC-5MhVTNQNWSoexSR8nAsjtu0Uz0bLA"/>
+<div class="absolute bottom-0 left-0 w-full p-4 product-hover-action">
+<button class="w-full py-3 glass-card text-primary font-label-caps tracking-[0.2em] hover:bg-white/90 transition-all">SELECT SIZE</button>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<span class="font-label-caps text-on-surface-variant uppercase text-[10px] tracking-widest">TAILORED OUTERWEAR</span>
+<h3 class="font-headline-sm text-headline-sm">Black Line Jacket</h3>
+<div class="flex justify-between items-center">
+<span class="font-body-md text-primary">145,000 Ks</span>
+<div class="w-3 h-3 rounded-full bg-black"></div>
+</div>
+<div class="pt-2 border-t border-outline/10 flex gap-2">
+<span class="font-label-caps text-[10px] text-on-surface">L</span>
+<span class="font-label-caps text-[10px] text-on-surface">M</span>
+</div>
+</div>
+</div>
+<!-- Product Card 9 -->
+<div class="product-card group bg-[#EFECE6] p-4 rounded-lg border border-[#E2DDD5]/50 shadow-[0_4px_12px_rgba(0,0,0,0.05)] transition-all duration-500">
+<div class="relative aspect-[3/4] overflow-hidden mb-6">
+<img class="product-image w-full h-full object-cover transition-transform duration-700 ease-out rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaQIgFS2mgMeryP2NH4LqW2E8rYISNTsF-p5Arz-5db0nx2Iz0wQSlaL73DKq9Y-ffnJLJLDqnOV0Pdp5TvNePIl6cZh3eyy67FeS91MyjtJ9WepYwdk7ETrIweYu4BgDVkpJumI2BiyZgRc7eNXUy-_RdGiiZwd8wfBE_UM-tW1R9pZnnnikp8yOe53zpk7tmrbiv8C84Lqc08MAjzzPv4C2M_Zp1i8JAMKg7pC6hwSXScy5f9u3Fh-FlRtySPC-lrL5HUAVzPn2vjg"/>
+</div>
+<div class="flex flex-col gap-2">
+<span class="font-label-caps text-on-surface-variant uppercase text-[10px] tracking-widest">TAILORED OUTERWEAR</span>
+<h3 class="font-headline-sm text-headline-sm">Brown Wood Blazer</h3>
+<div class="flex justify-between items-center">
+<span class="font-body-md text-primary">145,000 Ks</span>
+<div class="w-3 h-3 rounded-full" style="background-color: #9E7B66;"></div>
+</div>
+<div class="pt-2 border-t border-outline/10 flex gap-2">
+<span class="font-label-caps text-[10px] text-on-surface">L</span>
+</div>
+</div>
+</div>
+<!-- Product Card 10 -->
+<div class="product-card group bg-[#EFECE6] p-4 rounded-lg border border-[#E2DDD5]/50 shadow-[0_4px_12px_rgba(0,0,0,0.05)] transition-all duration-500">
+<div class="relative aspect-[3/4] overflow-hidden mb-6">
+<img class="product-image w-full h-full object-cover transition-transform duration-700 ease-out rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC45rw0ic8sY_PhDI_B6eZLU97rcNpbfmCO-zwSkXZMyiBAl4FQyxvGd6sgMA8LS_cQhbbrYL-AKHBlDL5PSBk4dUdFrhoi7flYKjdGbVzcf4s0deeTXOrL671XRya00_v39V03EQPyUuN6sC2twF46I7nSOUr9PJzlmZsTUSmh8roNKMQlmUMuK04q-ctA0t62zbxG14QX18t8m1f9vKNrNz6tM029P41TGYhO8hs1MSFT3UpWNKSdqxTtlkVMSY4lYIOAxVDpUrh47g"/>
+<div class="absolute top-4 left-4">
+<span class="bg-primary text-on-primary px-3 py-1 font-label-caps text-[10px] tracking-widest">SOLD OUT</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<span class="font-label-caps text-on-surface-variant uppercase text-[10px] tracking-widest">TAILORED OUTERWEAR</span>
+<h3 class="font-headline-sm text-headline-sm">Caramel Brown Jacket</h3>
+<div class="flex justify-between items-center">
+<span class="font-body-md text-primary">78,500 Ks</span>
+<div class="w-3 h-3 rounded-full" style="background-color: #BD9E87;"></div>
+</div>
+<div class="pt-2 border-t border-outline/10 flex gap-2">
+<span class="font-label-caps text-[10px] text-on-surface-variant">L</span>
+<span class="font-label-caps text-[10px] text-on-surface-variant">M</span>
+</div>
+</div>
+</div>
+<!-- Product Card 11 -->
+<div class="product-card group bg-[#EFECE6] p-4 rounded-lg border border-[#E2DDD5]/50 shadow-[0_4px_12px_rgba(0,0,0,0.05)] transition-all duration-500">
+<div class="relative aspect-[3/4] overflow-hidden mb-6">
+<img class="product-image w-full h-full object-cover transition-transform duration-700 ease-out rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC780XFPN2jy4xpUin-xCUW-k9haTV4TuuMS1TliAiTC3a0_HHfRBqA3wcXPgEXnYv0OqJQMrtZWlojT7SCQZjfKfZZiheNGOyzWjSruzNY9ZUBU8FtGwc-3m1b1gkQnLUy-8xyw_y03wpYjmmG7yfEo27OijV2oiWmrpIXr3txhT4q-yCLJemTFIDW4zmeZ0Nhdo8oemMKwVSGIt49K1rifZKpzebM8fQwdaBBrvg7RSpwmtdPdqhFK6FUkIz2ZH9GbxtiYQKQ_7uRww"/>
+<div class="absolute top-4 right-4 flex flex-col gap-2 product-hover-action">
+<button class="w-10 h-10 glass-card flex items-center justify-center hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="bookmark">bookmark</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<span class="font-label-caps text-on-surface-variant uppercase text-[10px] tracking-widest">WIDE TROUSERS</span>
+<h3 class="font-headline-sm text-headline-sm">Classic Pants — Grey</h3>
+<div class="flex justify-between items-center">
+<span class="font-body-md text-primary">91,500 Ks</span>
+<div class="w-3 h-3 rounded-full" style="background-color: #888888;"></div>
+</div>
+<div class="pt-2 border-t border-outline/10 flex gap-2">
+<span class="font-label-caps text-[10px] text-on-surface">28</span>
+<span class="font-label-caps text-[10px] text-on-surface">30</span>
+<span class="font-label-caps text-[10px] text-on-surface">32</span>
+</div>
+</div>
+</div>
+<!-- Product Card 12 -->
+<div class="product-card group bg-[#EFECE6] p-4 rounded-lg border border-[#E2DDD5]/50 shadow-[0_4px_12px_rgba(0,0,0,0.05)] transition-all duration-500">
+<div class="relative aspect-[3/4] overflow-hidden mb-6">
+<img class="product-image w-full h-full object-cover transition-transform duration-700 ease-out rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwY92WxDiZk5QNl4nsC_IbodFSFtBtrbbx7R5F0xncva7NKa1zI1P0SZxQtmzXLZsEbrx86I0LLm-0ly4uNUUnwPfwYfXheO1V6kpBZomx6id5cd8l6W9JyVx_hII_CTN5S4mqS5qfIL-vdjYeJW92tKEtrnR7TNX9mKb9683zSPdmjDagXflUoJ96aAkc1CuFvaZgLEo-79o7sOCLPGwGqrz5l3UNgSCOWKDZOCs1fr4ttqRppcnAXjida9dE5vCJ1PcBJZ4sWgm6tQ"/>
+</div>
+<div class="flex flex-col gap-2">
+<span class="font-label-caps text-on-surface-variant uppercase text-[10px] tracking-widest">WIDE TROUSERS</span>
+<h3 class="font-headline-sm text-headline-sm">Classic Pants — Black</h3>
+<div class="flex justify-between items-center">
+<span class="font-body-md text-primary">91,500 Ks</span>
+<div class="w-3 h-3 rounded-full bg-black"></div>
+</div>
+<div class="pt-2 border-t border-outline/10 flex gap-2">
+<span class="font-label-caps text-[10px] text-on-surface">28</span>
+<span class="font-label-caps text-[10px] text-on-surface">30</span>
+<span class="font-label-caps text-[10px] text-on-surface">32</span>
+<span class="font-label-caps text-[10px] text-on-surface">34</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Editorial Grid Footer -->
+<footer aria-labelledby="footer-heading" class="w-full bg-[#121212] pt-stack-xl pb-stack-md text-white overflow-hidden">
+<h2 class="sr-only" id="footer-heading">Footer Navigation</h2>
+<div class="max-w-container-max mx-auto px-6 md:px-margin-desktop">
+<!-- Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-stack-lg">
+<!-- Column 1: Brand & Social -->
+<div class="flex flex-col space-y-8">
+<div class="font-display-lg text-headline-md text-white tracking-tighter">RESTYLE</div>
+<p class="font-body-md text-neutral-400 max-w-xs leading-relaxed">
+                        Redefine Your Style with ReStyle. We craft more than garments; we construct an identity rooted in architectural precision and quiet luxury.
+                    </p>
+<nav aria-label="Social Media Links">
+<ul class="flex items-center gap-5">
+<li>
+<a aria-label="Facebook" class="w-11 h-11 rounded-full bg-white flex items-center justify-center hover:scale-105 hover:bg-neutral-100 transition-all duration-200 cursor-pointer" href="#" rel="noopener noreferrer" target="_blank">
+<svg aria-hidden="true" class="w-5 h-5 text-black" fill="currentColor" viewbox="0 0 24 24">
+<path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"></path>
+</svg>
+</a>
+</li>
+<li>
+<a aria-label="Instagram" class="w-11 h-11 rounded-full bg-white flex items-center justify-center hover:scale-105 hover:bg-neutral-100 transition-all duration-200 cursor-pointer" href="#" rel="noopener noreferrer" target="_blank">
+<svg aria-hidden="true" class="w-5 h-5 text-black" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<rect height="18" rx="5" ry="5" width="18" x="3" y="3"></rect>
+<path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"></path>
+<line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+</svg>
+</a>
+</li>
+<li>
+<a aria-label="TikTok" class="w-11 h-11 rounded-full bg-white flex items-center justify-center hover:scale-105 hover:bg-neutral-100 transition-all duration-200 cursor-pointer" href="#" rel="noopener noreferrer" target="_blank">
+<svg aria-hidden="true" class="w-5 h-5 text-black" fill="currentColor" viewbox="0 0 24 24">
+<path d="M12.525.02c1.31 0 2.591.405 3.666 1.152.145.103.263.239.348.398.085.159.125.337.117.516-.033 1.209.244 2.414.801 3.482.557 1.068 1.412 1.938 2.468 2.51.153.082.285.2.386.344.101.144.164.31.184.485.064 1.082.075 2.17.033 3.252-.01.213-.082.419-.208.592-.126.173-.302.302-.505.371-1.346.458-2.782.521-4.16.184V17.11c.006 1.528-.441 3.022-1.284 4.291-.843 1.269-2.052 2.243-3.473 2.8-.14.055-.29.082-.441.08-.151-.002-.3-.033-.437-.092-1.551-.667-2.826-1.81-3.66-3.282-.834-1.472-1.212-3.164-1.085-4.858.127-1.694.794-3.283 1.914-4.563 1.12-1.28 2.614-2.16 4.288-2.525.186-.04.379-.037.563.01.184.046.352.143.488.28.136.137.23.307.273.494.043.187.037.382-.017.566-.31 1.056-.31 2.176 0 3.232.054.184.06.379.017.566-.043.187-.137.357-.273.494-.136.137-.304.234-.488.28-.184.047-.377.05-.563.01-1.082-.236-2.048.336-2.774 1.152-.726.816-1.158 1.845-1.24 2.944-.082 1.099.163 2.198.704 3.154.541.956 1.369 1.698 2.376 2.132.923-.362 1.708-.995 2.255-1.818.547-.823.837-1.793.833-2.784V1.1c0-.292.116-.571.322-.777A1.098 1.098 0 0112.525.02z"></path>
+</svg>
+</a>
+</li>
+</ul>
+</nav>
+</div>
+<!-- Column 2: Useful Links -->
+<nav aria-label="Useful Links" class="flex flex-col space-y-6">
+<h3 class="font-label-caps text-label-caps tracking-widest text-white uppercase border-b border-white/10 pb-4">Useful Links</h3>
+<ul class="flex flex-col space-y-4">
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="about.html">About Us</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="contact.html">Contact Us</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="collections.html">Products</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="account.html">Login</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="account.html#signup">Sign Up</a></li>
+</ul>
+</nav>
+<!-- Column 3: Custom Area -->
+<nav aria-label="Customer Account Links" class="flex flex-col space-y-6">
+<h3 class="font-label-caps text-label-caps tracking-widest text-white uppercase border-b border-white/10 pb-4">Custom Area</h3>
+<ul class="flex flex-col space-y-4">
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="account.html">My Account</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="info.html?p=tracking">Tracking List</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="info.html?p=privacy">Privacy Policy</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="info.html?p=orders">Orders</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="cart.html">My Cart</a></li>
+</ul>
+</nav>
+<!-- Column 4: More Information & Payments -->
+<div class="flex flex-col space-y-6">
+<h3 class="font-label-caps text-label-caps tracking-widest text-white uppercase border-b border-white/10 pb-4">More Information</h3>
+<p class="font-body-md text-neutral-400 leading-relaxed">
+                        Sign up for our atelier newsletter to receive exclusive updates on seasonal collections and private tailoring sessions.
+                    </p>
+<form class="flex gap-2" data-form="newsletter">
+<label class="sr-only" for="nl-email">Email address</label>
+<input id="nl-email" name="email" type="email" required placeholder="Email Address" class="flex-1 min-w-0 bg-transparent border border-white/20 rounded-lg px-4 py-3 text-sm text-white placeholder:text-neutral-500 focus:ring-1 focus:ring-white focus:border-white"/>
+<button type="submit" class="px-4 border border-white/20 rounded-lg hover:bg-white hover:text-black transition-colors" aria-label="Subscribe"><span class="material-symbols-outlined text-[20px]">arrow_forward</span></button>
+</form>
+<div aria-label="Accepted Payment Methods" class="pt-4 flex flex-wrap gap-4">
+<div class="h-8 w-12 bg-white/10 rounded flex items-center justify-center group hover:bg-white transition-colors duration-500">
+<span class="material-symbols-outlined text-[20px] text-white group-hover:text-primary" data-icon="credit_card">credit_card</span>
+</div>
+<div class="h-8 w-12 bg-white/10 rounded flex items-center justify-center group hover:bg-white transition-colors duration-500">
+<span class="material-symbols-outlined text-[20px] text-white group-hover:text-primary" data-icon="account_balance">account_balance</span>
+</div>
+<div class="h-8 w-12 bg-white/10 rounded flex items-center justify-center group hover:bg-white transition-colors duration-500">
+<span class="material-symbols-outlined text-[20px] text-white group-hover:text-primary" data-icon="payments">payments</span>
+</div>
+<div class="h-8 w-12 bg-white/10 rounded flex items-center justify-center group hover:bg-white transition-colors duration-500">
+<span class="material-symbols-outlined text-[20px] text-white group-hover:text-primary" data-icon="wallet">wallet</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Bar -->
+<div class="border-t border-white/10 pt-8 flex flex-col items-center justify-center">
+<p class="font-label-caps text-[10px] tracking-widest text-neutral-500 text-center">
+                    COPYRIGHT © RESTYLE - DESIGNED BY DIGITAL QUEEN, 2024
+                </p>
+</div>
+</div>
+</footer>
+<script>
+        // Simple filter interaction simulation
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (this.parentElement.classList.contains('flex-wrap')) {
+                    const group = this.parentElement.querySelectorAll('button');
+                    group.forEach(b => {
+                        b.classList.remove('bg-primary', 'text-on-primary');
+                        b.classList.add('bg-surface-container', 'text-on-surface');
+                    });
+                    this.classList.remove('bg-surface-container', 'text-on-surface');
+                    this.classList.add('bg-primary', 'text-on-primary');
+                }
+            });
+        });
+
+        // Hover scale effect listener
+        document.querySelectorAll('.product-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.classList.add('z-10');
+            });
+            card.addEventListener('mouseleave', () => {
+                card.classList.remove('z-10');
+            });
+        });
+    </script>
+</body></html>

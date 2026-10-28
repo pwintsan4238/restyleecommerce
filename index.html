@@ -1,0 +1,696 @@
+<html class="scroll-smooth" lang="en" style=""><head><link rel="stylesheet" href="assets/site.css"/>
+<script src="assets/config.js" defer></script>
+<script src="assets/products.js" defer></script>
+<script src="assets/site.js" defer></script>
+</head><body class="bg-surface font-body-md text-primary overflow-x-hidden" data-page="home">html
+
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RESTYLE | Define Your Style</title>
+<script src="https://cdn.tailwindcss.com/3.4.16?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#fbf9f6",
+                        "on-primary-container": "#858383",
+                        "primary-fixed": "#e5e2e1",
+                        "surface-variant": "#e4e2df",
+                        "surface-container-low": "#f5f3f0",
+                        "primary-container": "#1c1b1b",
+                        "tertiary-fixed": "#dce5de",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#4b4739",
+                        "on-surface": "#1b1c1a",
+                        "on-secondary-container": "#696455",
+                        "secondary-fixed-dim": "#cdc6b4",
+                        "outline": "#747878",
+                        "tertiary-container": "#151d19",
+                        "surface-container-highest": "#e4e2df",
+                        "on-tertiary-fixed-variant": "#404944",
+                        "on-secondary-fixed": "#1f1b10",
+                        "tertiary": "#000000",
+                        "surface-tint": "#5f5e5e",
+                        "primary-fixed-dim": "#c8c6c5",
+                        "error-container": "#ffdad6",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#efeeeb",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#474646",
+                        "on-primary-fixed": "#1c1b1b",
+                        "inverse-surface": "#30312f",
+                        "surface-container-high": "#eae8e5",
+                        "surface-bright": "#fbf9f6",
+                        "inverse-on-surface": "#f2f0ed",
+                        "on-background": "#1b1c1a",
+                        "surface-dim": "#dbdad7",
+                        "on-tertiary-fixed": "#151d19",
+                        "on-surface-variant": "#444748",
+                        "secondary": "#635e4f",
+                        "on-tertiary-container": "#7d8680",
+                        "on-secondary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#c8c6c5",
+                        "primary": "#000000",
+                        "secondary-container": "#eae2cf",
+                        "outline-variant": "#c4c7c7",
+                        "tertiary-fixed-dim": "#c0c9c2",
+                        "secondary-fixed": "#eae2cf",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "background": "#fbf9f6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "stack-lg": "80px",
+                        "stack-xl": "120px",
+                        "margin-mobile": "20px",
+                        "margin-desktop": "64px",
+                        "gutter": "24px",
+                        "unit": "4px",
+                        "stack-md": "40px"
+                    },
+                    "fontFamily": {
+                        "display-lg-mobile": ["Cormorant Garamond"],
+                        "display-lg": ["Cormorant Garamond"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "headline-sm": ["Cormorant Garamond"],
+                        "headline-md": ["Cormorant Garamond"],
+                        "label-caps": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-md": ["32px", {"lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                        "display-lg-mobile": ["40px", {"lineHeight": "1.1", "letterSpacing": "0.02em", "fontWeight": "300"}],
+                        "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "0.02em", "fontWeight": "300"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "1.4", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        
+        .curatorial-bg {
+            background: radial-gradient(circle at center, #fbf9f6 0%, #dbdad7 100%);
+            position: relative;
+        }
+
+        .curatorial-bg::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            opacity: 0.03;
+            pointer-events: none;
+            background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, #000 3px),
+                              repeating-linear-gradient(90deg, transparent, transparent 2px, #000 3px);
+            background-size: 3px 3px;
+        }
+
+        .debossed-text {
+            color: rgba(0,0,0,0.03);
+            text-shadow: -1px -1px 1px rgba(255,255,255,0.3), 1px 1px 1px rgba(0,0,0,0.05);
+            letter-spacing: 0.5em;
+        }
+
+        .reveal-up, .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal-up.active, .fade-in-up.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .delay-1 { transition-delay: 0.1s; }
+        .delay-2 { transition-delay: 0.2s; }
+        .delay-3 { transition-delay: 0.3s; }
+        .delay-4 { transition-delay: 0.4s; }
+        .delay-5 { transition-delay: 0.5s; }
+        .delay-6 { transition-delay: 0.6s; }
+        .delay-7 { transition-delay: 0.7s; }
+
+        .glass-layered {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        
+        .glass-layered:hover {
+            transform: perspective(1000px) rotateX(4deg) rotateY(-4deg);
+        }
+
+        .shimmer-video {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shimmer-video::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: translateX(-100%);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            100% { transform: translateX(100%); }
+        }
+
+        .vertical-text {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+        }
+
+        .parallax-element {
+            will-change: transform;
+            transition: transform 0.1s ease-out;
+        }
+
+        @keyframes pulse-soft {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.5); opacity: 0.2; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+
+        .hotspot-pulse {
+            animation: pulse-soft 3s infinite ease-in-out;
+        }
+        
+        .hover-zoom {
+            transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .group:hover .hover-zoom {
+            transform: scale(1.05);
+        }
+        .hover-reveal {
+            opacity: 0;
+            transform: translateX(10px);
+            transition: all 0.4s ease;
+        }
+        .group:hover .hover-reveal {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .quick-add-bar {
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .group:hover .quick-add-bar {
+            transform: translateY(0);
+        }
+    </style>
+<!-- TopNavBar -->
+<a class="rs-skip" href="#main">Skip to content</a>
+<header id="site-header" class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-primary/5 transition-all duration-500 ease-out">
+<div class="flex justify-between items-center h-20 px-5 md:px-16 max-w-[1440px] mx-auto">
+<nav class="hidden md:flex items-center flex-1 gap-6" aria-label="Primary">
+<a class="font-label-caps text-[11px] tracking-widest py-2 border-b text-primary border-primary" href="index.html" aria-current="page">HOME</a>
+<a class="font-label-caps text-[11px] tracking-widest py-2 border-b text-primary/75 border-transparent hover:text-primary hover:border-primary/30 transition-colors" href="collections.html">COLLECTIONS</a>
+<a class="font-label-caps text-[11px] tracking-widest py-2 border-b text-primary/75 border-transparent hover:text-primary hover:border-primary/30 transition-colors" href="about.html">ABOUT</a>
+<a class="font-label-caps text-[11px] tracking-widest py-2 border-b text-primary/75 border-transparent hover:text-primary hover:border-primary/30 transition-colors" href="contact.html">CONTACT</a>
+</nav>
+<div class="md:hidden flex-1 flex items-center"><button class="rs-icon-btn text-primary" data-action="menu" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span class="material-symbols-outlined">menu</span></button></div>
+<div class="flex-1 flex justify-center">
+<a class="font-display-lg text-[22px] sm:text-[28px] md:text-[40px] tracking-[0.15em] sm:tracking-[0.2em] text-primary whitespace-nowrap" href="index.html">RESTYLE</a>
+</div>
+<div class="flex items-center gap-0 sm:gap-2 md:gap-4 text-primary flex-1 justify-end">
+<button class="rs-icon-btn" data-action="search" aria-label="Search"><span class="material-symbols-outlined">search</span></button>
+<a class="rs-icon-btn" href="wishlist.html" aria-label="Wishlist"><span class="material-symbols-outlined">favorite</span><span class="rs-badge" data-count="wish" hidden></span></a>
+<a class="rs-icon-btn" href="cart.html" aria-label="Shopping bag"><span class="material-symbols-outlined">shopping_bag</span><span class="rs-badge" data-count="cart" hidden></span></a>
+<a class="rs-icon-btn !hidden sm:!inline-flex" href="account.html" aria-label="Account"><span class="material-symbols-outlined">person</span></a>
+</div>
+</div>
+<nav id="mobile-menu" class="md:hidden hidden bg-surface border-t border-primary/10 px-5 py-4" aria-label="Mobile">
+<a class="block py-3 font-label-caps text-xs tracking-widest text-primary" href="index.html" aria-current="page">HOME</a>
+<a class="block py-3 font-label-caps text-xs tracking-widest text-primary/75" href="collections.html">COLLECTIONS</a>
+<a class="block py-3 font-label-caps text-xs tracking-widest text-primary/75" href="about.html">ABOUT</a>
+<a class="block py-3 font-label-caps text-xs tracking-widest text-primary/75" href="contact.html">CONTACT</a>
+<a class="block py-3 font-label-caps text-xs tracking-widest text-primary/75" href="account.html">ACCOUNT</a>
+</nav>
+</header>
+<main id="main">
+<!-- Hero Section -->
+<section class="relative w-full overflow-hidden min-h-screen pt-20 curatorial-bg flex items-center">
+<!-- Massive Background Text -->
+<div class="absolute right-20 top-1/2 -translate-y-1/2 select-none pointer-events-none parallax-element" data-speed="0.1">
+<span class="vertical-text font-display-lg text-[220px] leading-none debossed-text">R E S T Y L E</span>
+</div>
+<div class="container mx-auto px-margin-desktop max-w-container-max relative h-[85vh] flex flex-col md:flex-row items-center justify-between">
+<!-- Left Content Block -->
+<div class="w-full md:w-5/12 z-40 reveal-up active" style="transition-delay: 0.1s;">
+<span class="inline-block px-4 py-1.5 bg-sage-green/10 text-sage-green font-label-caps text-[10px] tracking-[0.25em] mb-8 rounded-full">RESTYLE VIBES</span>
+<h1 class="font-display-lg text-[64px] md:text-[84px] text-primary mb-8 leading-[0.95] tracking-tight">DEFINE YOUR<br/>STYLE.</h1>
+<p class="font-body-md text-primary/70 mb-12 max-w-sm text-lg leading-relaxed">Inspired by the city. Designed for modern lives. Meticulously crafted tailoring for the discerning individual.</p>
+<!-- Button Group -->
+<div class="flex flex-wrap items-center gap-4 mt-8">
+<a class="bg-primary text-on-primary font-label-caps text-[11px] tracking-[0.25em] px-10 py-4 flex items-center gap-3 transition-transform hover:-translate-y-0.5 active:translate-y-0 rounded-lg" href="collections.html">
+                            SHOP NOW
+                            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+<a class="bg-white/10 backdrop-blur-md border text-primary font-label-caps text-[11px] tracking-[0.25em] px-10 py-4 transition-all hover:bg-white/20 hover:border-white/60 border-primary border-black rounded-lg" href="collections.html">
+                            COLLECTION
+                        </a>
+</div>
+</div>
+<!-- Center Model -->
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none md:pointer-events-auto">
+<div class="relative h-full aspect-[2/3] reveal-up active parallax-element" data-speed="0.05" style="transition-delay: 0.3s;">
+<!-- Ambient Shadow -->
+<div class="absolute bottom-12 -translate-x-1/2 w-64 h-12 bg-black/10 blur-[40px] rounded-[100%] opacity-60"></div>
+<!-- Model Image -->
+<img alt="Full-length model in dark tailoring" class="h-full w-full object-contain relative z-10 filter drop-shadow-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBG2k4lowAPvgkIVVtg9_6NUZ7kNABQdCfbO4nZIDUMyXiagVtpTZRBvaqJbj9E7mWGTEx0sszXKfL4koTbOb2rTLKNwAAKi4Z9UoaSk4EgTe7d3IfSAkMxvN6MqQXavdOrLxKqWnC4VvDYNjJQvxnCL41MNdHTLwUPEA0f_SRYpyvGyD9xPtBw5PyPjRd-Zv93L-9W3ByBSVn1scFQdcXzDXQpBs6othuTmAi3JT0L4yzg_ZavkX3d62-NLdBd_ymI17DfTZWsK8Tg3w"/>
+</div>
+</div>
+<!-- Bottom-Right Video Card -->
+<div class="absolute right-8 md:right-16 z-30 w-80 reveal-up active bottom-48 md:bottom-40" style="transition-delay: 0.5s;">
+<div class="bg-white/40 backdrop-blur-md p-5 rounded-2xl shadow-sm border border-white/40 parallax-element" data-speed="-0.05">
+<div class="relative aspect-[4/5] overflow-hidden rounded-xl group shimmer-video">
+<img class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMCjKyB_nZQPyfU4uBO62OFuQbItW-RtJqXzbty_Qg91J4IByOJPxYMCMZH1vp5rb4Dm6qlUcduGu4mt-xC2efVJYS2lN5_ji3Kk0eQOWrlS9gjAiQTju1mv_xqowNBbRcq1zLf109l9FsJ9YuaynoutUUi5Kl1d8356EqMYLqto5gZnRnD9Xoa0wbVIC0bBVorYfAABdjEfE0GGDsX2zLiYPzuIYewvWwO--uxqDr4uHnV1qg6b4uUKpghOKa-z6SAmpESZAxJo0Kow"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<button class="w-12 h-12 rounded-full bg-surface/40 backdrop-blur-md flex items-center justify-center text-primary border border-white/30 transition-transform hover:scale-110"> <span class="material-symbols-outlined" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span> </button>
+</div>
+</div>
+<div class="mt-5 px-1">
+<p class="font-label-caps text-[9px] tracking-[0.25em] text-primary/40 mb-1">BEHIND THE SEAMS</p>
+<h4 class="font-display-lg text-xl text-primary">Atelier Craftsmanship</h4>
+</div>
+</div>
+</div>
+</div>
+<!-- Trust Bar -->
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-5xl z-20">
+<div class="bg-white/30 backdrop-blur-xl border border-white/20 py-8 px-4 sm:px-8 grid grid-cols-2 md:grid-cols-4 gap-8 rounded-2xl" style="border-color: rgb(96, 94, 89);">
+<div class="flex flex-col items-center text-center gap-2">
+<span class="material-symbols-outlined text-primary text-[28px]">local_shipping</span>
+<p class="font-label-caps text-[11px] tracking-widest text-primary">GLOBAL SHIPPING</p>
+</div>
+<div class="flex flex-col items-center text-center gap-2">
+<span class="material-symbols-outlined text-primary text-[28px]">verified</span>
+<p class="font-label-caps text-[11px] tracking-widest text-primary">BESPOKE QUALITY</p>
+</div>
+<div class="flex flex-col items-center text-center gap-2">
+<span class="material-symbols-outlined text-primary text-[28px]">support_agent</span>
+<p class="font-label-caps text-[11px] tracking-widest text-primary">24/7 SUPPORT</p>
+</div>
+<div class="flex flex-col items-center text-center gap-2">
+<span class="material-symbols-outlined text-primary text-[28px]">lock</span>
+<p class="font-label-caps text-[11px] tracking-widest text-primary">SECURE CHECKOUT</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Product Categories Asymmetrical Bento Section -->
+<section class="pb-stack-xl bg-surface">
+<!-- Editorial Header -->
+<div class="max-w-container-max mx-auto px-margin-desktop py-stack-lg text-center reveal-up active">
+<p class="font-label-caps text-[10px] tracking-[0.4em] text-secondary mb-4 uppercase">Curated Collections</p>
+<h2 class="font-display-lg text-display-lg-mobile md:text-display-lg text-primary mb-6">Product Categories</h2>
+<p class="font-body-md text-on-surface-variant max-w-2xl mx-auto opacity-80">Discover classic and modern designs tailored for the contemporary man. Our collection offers a perfect blend of quality, comfort, and style for any occasion.</p>
+</div>
+<!-- Asymmetrical Bento Grid Section -->
+<section class="max-w-container-max mx-auto px-margin-desktop">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter auto-rows-[300px]">
+<!-- 1. Flagship Hero (Top-Left, 2x2) -->
+<div class="bento-card md:col-span-2 md:row-span-2 group relative overflow-hidden cursor-pointer fade-in-up delay-1 active rounded-lg">
+<img alt="Blazers &amp; Tailoring" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDo5Myw98W6Wp9ytGgiKEwgTbonohB0uewem-WAEB195LErXsmXVKe3pRC7x7DqMpVMSs12V6wb-TUWEDnK4KJvf7wcZiiPrdI2PGXJRPfhBMlymggLlzQ_I3_aPomnK1njWkq1YrZdlTYmxKxttdkIiW0l5v4n_gEMMMMsYZVzbFwFzRLeS45xTHHYMyiNFWhBylLtZNTvZh37bg3xKeGGiPTGHtb0r9v63WqsfyZTMoWEjAroYtB711KJvWbIuNxih2IbE6pXzWpCYQ"/>
+<div class="absolute top-6 left-6 bg-white/50 backdrop-blur-md border border-white/70 px-4 py-2 rounded-full">
+<span class="font-label-caps text-[10px] tracking-widest text-primary uppercase">Curated Essentials</span>
+</div>
+<div class="absolute bottom-6 left-6 right-6 p-6 bg-white/50 backdrop-blur-md border border-white/70 rounded-lg flex justify-between items-center transition-transform duration-500 group-hover:-translate-y-1">
+<div>
+<h3 class="font-display-lg text-headline-sm text-primary">Blazer</h3>
+<p class="font-label-md text-on-surface-variant opacity-70">2 Items</p>
+</div>
+<div class="cta-circle w-12 h-12 rounded-full flex items-center justify-center border border-black/5 bg-white/80 transition-colors duration-300 group-hover:bg-primary group-hover:text-white">
+<span class="material-symbols-outlined text-[20px]">north_east</span>
+</div>
+</div>
+</div>
+<!-- 2. Wide Feature (Top-Right, 2x1) -->
+<div class="bento-card md:col-span-2 md:row-span-1 group relative overflow-hidden cursor-pointer fade-in-up delay-2 active rounded-lg">
+<img alt="Instock Collections" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDV93mbTdgAw90RnNk7c9lOntO_ZmY19RDFcmf0lz0IsJwGU8M4Fr4mGprcdac2LTijOCQjEE46R68tEjuqzwJ18AZW353Y8vWsOu7HlHNaMZUOiYDFcD_31d62cGIcEYYERqWWlzXricvhq3pA4uWzsxrpYjB1X0uz0NhsuGcjHrcOLPB6biSYPJej2ZIC_dJbGZ2up-aEfOdUv2meKyxf7toBz2ARpSlDWEWWKmO8Pd6w-xszIAZ2t6xl4RngeRrBye_H4OVyIxmkKg"/>
+<div class="absolute bottom-6 right-6 bg-white/50 backdrop-blur-md border border-white/70 px-5 py-3 rounded-lg">
+<span class="font-label-caps text-[12px] text-primary">Instock Collections — 33 Items</span>
+</div>
+</div>
+<!-- 3. Standard Square (Middle-Right, 1x1) -->
+<div class="bento-card md:col-span-1 md:row-span-1 group relative overflow-hidden cursor-pointer fade-in-up delay-3 active rounded-lg">
+<img alt="Jackets" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEX_ASNKpk0-3UBPFq-YJ-qIEvktIq96vUKOC93U3GzcnEmF4HV5RG5URGXEIZPup06iBrBueN7-5rKKzvEIMEdjv0PBHuJhzDixcqgsHQsdAtwtF73uBit6H2ZEn78q9Zwk93W155MzDfvP86x83vcFONOq0IG3K1To6Br522xNNutk7Cg0d_mQGinNt2rsqH5ZBvNASFSOuOvxXEs_SKize2SdttqdkYLk2POciyAldTX7PIQO19KeJQqeTOkRhNTMuk9AarmIPljw"/>
+<div class="absolute bottom-4 left-4 right-4 bg-white/50 backdrop-blur-md border border-white/70 px-4 py-2 rounded-lg text-center">
+<span class="font-label-caps text-[11px] text-primary">Jackets — 34 Items</span>
+</div>
+</div>
+<!-- 4. Standard Square (Middle-Right-End, 1x1) -->
+<div class="bento-card md:col-span-1 md:row-span-1 group relative overflow-hidden cursor-pointer fade-in-up delay-4 active rounded-lg">
+<img alt="Shirts" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9lGxcQyHzBOUg238ddH4CBzoKmCQU4GoQ6U0fefSqHoRvkzBHI1ew19rC0GwIiqJ_hI_aqIHWHlSPEjB9yo_AI3sZxroZHSdNcUy4Cle7xkQZNBWfUIZdZCaYCx0KJar5KcCb97akiYRCgtoAZdF_qhSPuy5-dLciImZxmGvBMpWtRcCpqdPab-Ha3qpKS4lgBhp37gCbaAbTltiBDPd7sugA29JIbP-MByd9HcR8GVNImbxd7v0laASB4V6Ky-eERGsE-jNnF9ZG2Q"/>
+<div class="absolute bottom-4 left-4 right-4 bg-white/50 backdrop-blur-md border border-white/70 px-4 py-2 rounded-lg text-center">
+<span class="font-label-caps text-[11px] text-primary">Shirts — 16 Items</span>
+</div>
+</div>
+<!-- 5. Standard Square (Bottom-Left, 1x1) -->
+<div class="bento-card md:col-span-1 md:row-span-1 group relative overflow-hidden cursor-pointer fade-in-up delay-5 active rounded-lg">
+<img alt="Pants" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3hpt2XNF1DeEH_9sEWi8yt9knpvbPoTD2O3VMLQz3hShNcpNK_OWePg95LwvdBmN5GyFtlvGeh8uZGG6UX9BkCKhlO5tDk9UNFmSfh0dh2gZttkOBD9sn7gfDBuURJ_pzlnJGxauHKxQW8qvIdrTNQqKhw_0jyIDl-ObEy98KOFBjQncaEVe70yjYJVybs13N-0Gs4Dhm_Rjxvl99Y0UzJ2laJ2q_wmmq6SKDZdDf2T51MdZd24ZJrpqboTYUS2hQOA"/>
+<div class="absolute bottom-4 left-4 right-4 bg-white/50 backdrop-blur-md border border-white/70 px-4 py-2 rounded-lg text-center">
+<span class="font-label-caps text-[11px] text-primary">Pants — 15 Items</span>
+</div>
+</div>
+<!-- 6. Standard Square (Bottom-Center-Left, 1x1) -->
+<div class="bento-card md:col-span-1 md:row-span-1 group relative overflow-hidden cursor-pointer fade-in-up delay-6 active rounded-lg">
+<img alt="Hoodies" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmD1PZauA6niLENv9FQS3NVs670Ag8frDiidPTWkqP_Ct2nF5MX51ZMjRx0kfz7p-_O_0h67bBUc4O0A-Fj4VjfnlMf68bs37mKHCdHGEQQCcmX-fUbxf05zEifB5IEP50uarmcvGnVZT0J20cM-9P2NuC34KhEHyNLR_11oDB3jMTfcfsLFNOcsYr3oIdDyh7QtCeNNR1NjTCxfcdZN5b2QL2pIwoA4duvADpqhbi0iE9_PAuM93flFuAJFWMQW-dq4FBRecBjDnFoQ"/>
+<div class="absolute bottom-4 left-4 right-4 bg-white/50 backdrop-blur-md border border-white/70 px-4 py-2 rounded-lg text-center">
+<span class="font-label-caps text-[11px] text-primary">Hoodies — 1 Item</span>
+</div>
+</div>
+<!-- 7. Editorial Story Card (Bottom-Right, 2x1) -->
+<div class="bento-card md:col-span-2 md:row-span-1 bg-[#121212] p-12 flex flex-col items-center justify-center text-center fade-in-up delay-7 border border-white/5 group relative overflow-hidden active rounded-3xl">
+<div class="relative z-10">
+<p class="font-label-caps text-[10px] tracking-[0.3em] text-surface-container-low/60 mb-6 uppercase">The Restyle Way</p>
+<h3 class="font-display-lg text-3xl lg:text-4xl text-white mb-8 leading-tight max-w-md">Meticulously Restored. Tailored for Modern Lives.</h3>
+<a class="font-label-caps text-xs tracking-widest uppercase text-surface-dim hover:text-white transition-colors duration-300 border-b border-white/10 pb-1 inline-block" href="about.html">
+                        Discover Our Atelier Process →
+                    </a>
+</div>
+<!-- Elegant radial gradient for depth -->
+<div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_#333_0%,_transparent_100%)] transition-opacity duration-500 group-hover:opacity-30"></div>
+<!-- Inner glow effect on hover -->
+<div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none shadow-[inset_0_0_40px_rgba(255,255,255,0.05)]"></div>
+</div>
+</div>
+</section>
+</section>
+<!-- Everyday Collective Editorial Campaign -->
+<section class="bg-surface-bright relative w-full overflow-hidden" style="background-color: rgb(239, 236, 230);">
+<div class="relative w-full aspect-[21/9] md:aspect-[2.4/1] group overflow-hidden">
+<!-- Banner Image with Hover Zoom -->
+<img alt="Everyday Collective" class="w-full h-full object-cover transition-transform duration-[3s] ease-out group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAT0tjkE7nYwCMAo1mS73H2nGqaqHmcJOESgI5AdMxo93TYvK4H1AwG-omnGjk6RgCUFPnkrbnTbpnG-Mlh0xzbaGFS_rQfRr4Yr0icUVCiQ8zWLJ_vN05vaeLXCSUeuhx7YDzGYAuzxQtP0wR8zefa0iagniDhNCMJ_07A6zAHJVABsXEpriqW1EgruzqFM5uv-FSQP49H2cMoGPH1_-_aT0E7zYoNR1e2EktHpPboczMeW50z6tNg6AwyZU2PHWnJ7p6iFRKPpznPZg"/>
+<!-- Interactive Pulsing Hotspots -->
+<div class="absolute top-[40%] left-[25%] group/hotspot"><div class="relative group/marker cursor-pointer"><div class="w-4 h-4 bg-[#8FA08A] rounded-full border border-white/40 flex items-center justify-center transition-transform group-hover/marker:scale-125"><div class="w-1 h-1 bg-white rounded-full"></div></div><div class="absolute left-6 top-0 bg-white/80 backdrop-blur-md px-3 py-1 rounded border border-white/60 opacity-0 group-hover/marker:opacity-100 transition-opacity pointer-events-none whitespace-nowrap"><span class="font-label-caps text-[9px] tracking-widest text-[#121212]">ENGRAVED HALLMARK</span></div></div></div>
+<div class="absolute top-[35%] left-[55%] group/hotspot"><div class="relative group/marker cursor-pointer"><div class="w-4 h-4 bg-[#8FA08A] rounded-full border border-white/40 flex items-center justify-center transition-transform group-hover/marker:scale-125"><div class="w-1 h-1 bg-white rounded-full"></div></div><div class="absolute left-6 top-0 bg-white/80 backdrop-blur-md px-3 py-1 rounded border border-white/60 opacity-0 group-hover/marker:opacity-100 transition-opacity pointer-events-none whitespace-nowrap"><span class="font-label-caps text-[9px] tracking-widest text-[#121212]">PREMIUM TEXTILE</span></div></div></div>
+<div class="absolute top-[50%] left-[78%] group/hotspot"><div class="relative group/marker cursor-pointer"><div class="w-4 h-4 bg-[#8FA08A] rounded-full border border-white/40 flex items-center justify-center transition-transform group-hover/marker:scale-125"><div class="w-1 h-1 bg-white rounded-full"></div></div><div class="absolute left-6 top-0 bg-white/80 backdrop-blur-md px-3 py-1 rounded border border-white/60 opacity-0 group-hover/marker:opacity-100 transition-opacity pointer-events-none whitespace-nowrap"><span class="font-label-caps text-[9px] tracking-widest text-[#121212]">ARTISANAL FINISH</span></div></div></div>
+<!-- Floating Glass Card -->
+<div class="absolute bottom-12 left-12 reveal-up active"><div class="bg-white/40 backdrop-blur-xl py-10 px-12 rounded-2xl border border-white/60 max-w-2xl shadow-sm relative overflow-hidden"><div class="border-b border-black/5 mb-8 pb-2"><h2 class="font-display-lg text-[32px] md:text-[44px] text-[#121212] tracking-widest leading-tight">Elevate your style with timeless men's fashion</h2></div><p class="font-display-lg text-[#4A4A4A] max-w-xl leading-relaxed mb-10 text-lg tracking-widest">From everyday essentials to statement pieces, our men's clothing line is crafted to complement your unique style. Step into the season with confidence and sophistication.</p><div class="flex items-center gap-8 pt-6 border-t border-black/5"><a class="bg-white text-[#121212] font-label-caps font-bold px-10 py-4 rounded-full uppercase tracking-widest shadow-sm hover:bg-surface transition-colors" href="collections.html">Shop Now</a><a class="flex items-center gap-2 text-[#8FA08A] font-label-caps font-semibold uppercase tracking-widest hover:opacity-70 transition-opacity" href="about.html"><span class="material-symbols-outlined">token</span>HALLMARK TOUR</a></div></div></div>
+</div>
+</section>
+<!-- New Arrivals Section -->
+<section class="max-w-container-max mx-auto px-margin-desktop py-stack-xl reveal-up active">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row md:items-end justify-between mb-stack-lg gap-6">
+<div class="space-y-4">
+<p class="font-label-caps text-[10px] tracking-[0.4em] text-secondary uppercase">JUST LANDED / 2026 COLLECTION</p>
+<h2 class="font-display-lg text-[60px] md:text-[80px] leading-none tracking-tight text-primary">New Arrivals</h2>
+</div>
+<a class="font-label-caps text-label-caps text-primary hover:opacity-70 transition-opacity flex items-center gap-3 group pb-2 border-b border-primary/20" href="collections.html">
+        EXPLORE ALL NEW PIECES 
+        <span class="material-symbols-outlined text-[18px] transition-transform group-hover:translate-x-1 group-hover:-translate-y-1">north_east</span>
+</a>
+</header>
+<!-- Filters: Refined Architectural Pill Nav -->
+<div class="flex flex-wrap gap-4 mb-stack-lg">
+<button class="px-8 py-2.5 rounded-full bg-primary text-on-primary font-label-caps text-[11px] tracking-widest transition-all">ALL NEW</button>
+<button class="px-8 py-2.5 rounded-full border border-primary/10 text-primary font-label-caps text-[11px] tracking-widest hover:bg-surface-container transition-all">TAILORED OUTERWEAR</button>
+<button class="px-8 py-2.5 rounded-full border border-primary/10 text-primary font-label-caps text-[11px] tracking-widest hover:bg-surface-container transition-all">OVERSIZED SHIRTS</button>
+<button class="px-8 py-2.5 rounded-full border border-primary/10 text-primary font-label-caps text-[11px] tracking-widest hover:bg-surface-container transition-all">WIDE TROUSERS</button>
+<button class="px-8 py-2.5 rounded-full border border-primary/10 text-primary font-label-caps text-[11px] tracking-widest hover:bg-surface-container transition-all">KNITWEAR</button>
+</div>
+<!-- Product Grid: Editorial Rhythm -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Product 1 -->
+<div class="group flex flex-col rounded-lg overflow-hidden border border-[#E2DDD5]/50 shadow-[0_4px_12px_rgba(0,0,0,0.05)] bg-[#EFECE6] p-3 md:p-4 transition-transform duration-500 hover:-translate-y-1">
+<div class="card-image-container relative bg-surface-container-low aspect-[3/4] overflow-hidden rounded-lg">
+<img alt="Black Diamond Blazer Set" class="w-full h-full object-cover hover-zoom rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3PyI8ewY8DpRFbJszvvjStT49idp2V5TvOy2aAz6vZFBZVZkIGYQzdbTW1twBOqMQzTogIO0XeDYO0Yb2xgfCRxnnBwpIsa7iuPnrbB7f6DsFcyLwN2jeSqFZnilVKFPMIDCxkumliENsqvlEWBiDjoKkMvfFnEoPBc06raZGDs2azWmbMcH_YBNIF2lLrZNwzt222O_8qmXvLqEdJvoEO1u-V62AgaygoEDzGua-bkptdJKIIzH7JNBdY6Tm4ofMAMDVBfXVko_KAA"/>
+<div class="absolute top-6 left-6 bg-white/40 backdrop-blur-xl border border-white/60 px-3 py-1 font-label-caps text-[9px] tracking-[0.2em] uppercase">NEW</div>
+<div class="absolute top-6 right-6 flex flex-col gap-3 hover-reveal">
+<button class="w-10 h-10 rounded-full bg-white/40 backdrop-blur-xl border border-white/60 flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-white/40 backdrop-blur-xl border border-white/60 flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</div>
+<button class="absolute bottom-0 left-0 w-full bg-white/40 backdrop-blur-xl border-t border-white/60 py-4 font-label-caps text-[10px] tracking-[0.2em] quick-add-bar hover:bg-primary hover:text-on-primary transition-colors">
+                + QUICK ADD
+            </button>
+</div>
+<div class="mt-8 space-y-2">
+<p class="font-label-caps text-[10px] text-secondary uppercase tracking-[0.2em]">Tailored Outerwear</p>
+<h3 class="font-display-lg text-[24px] tracking-wider text-primary">Black Diamond Blazer Set</h3>
+<p class="font-body-md text-body-md text-primary">145,000 Ks</p>
+<div class="flex gap-3 pt-2">
+<span class="w-2 h-2 rounded-full bg-black"></span>
+<span class="w-2 h-2 rounded-full bg-[#4A4A4A]"></span>
+<span class="w-2 h-2 rounded-full bg-[#EFECE6]"></span>
+</div>
+</div>
+</div>
+<!-- Product 2 -->
+<div class="group flex flex-col lg:mt-12 rounded-lg overflow-hidden border border-[#E2DDD5]/50 shadow-[0_4px_12px_rgba(0,0,0,0.05)] bg-[#EFECE6] p-3 md:p-4 transition-transform duration-500 hover:-translate-y-1">
+<div class="card-image-container relative bg-surface-container-low aspect-[3/4] overflow-hidden">
+<img alt="Oversized Silk-Linen Shirt" class="w-full h-full object-cover hover-zoom rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjse2Ka__4ptUKQF7ySH9JRUvVfIep3wwYtgxiIpbI1hFsmm9wHHjnpRu2KsfV11PPN-9TO4JPhU0XZ7qGHkzVSiIyyTes-Xh_TtCMyEu2Aq3EGEEZ8QJAMB1-NI1WEFHkZTsThAz5yE0D-RH6jDp6o4IPnVy5tsLXf2ofURKanlGAD8Z1Jk-vC_W_rmD6d6GCjY8yp_Z5n-ee4CbUanmAJJQGI5AIcvQZBYlUO7A3wSAZ9UigkoaN2lHfFXKKuXD5KYrKQx_CS4Xy0g"/>
+<div class="absolute top-6 left-6 bg-white/40 backdrop-blur-xl border border-white/60 px-3 py-1 font-label-caps text-[9px] tracking-[0.2em] uppercase">ESSENTIAL</div>
+<div class="absolute top-6 right-6 flex flex-col gap-3 hover-reveal">
+<button class="w-10 h-10 rounded-full bg-white/40 backdrop-blur-xl border border-white/60 flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-white/40 backdrop-blur-xl border border-white/60 flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</div>
+<button class="absolute bottom-0 left-0 w-full bg-white/40 backdrop-blur-xl border-t border-white/60 py-4 font-label-caps text-[10px] tracking-[0.2em] quick-add-bar hover:bg-primary hover:text-on-primary transition-colors">
+                + QUICK ADD
+            </button>
+</div>
+<div class="mt-8 space-y-2">
+<p class="font-label-caps text-[10px] text-secondary uppercase tracking-[0.2em]">Shirts</p>
+<h3 class="font-display-lg text-[24px] tracking-wider text-primary">Oversized Silk-Linen Shirt</h3>
+<p class="font-body-md text-body-md text-primary">85,500 Ks</p>
+<div class="flex gap-3 pt-2">
+<span class="w-2 h-2 rounded-full bg-[#F5F5F5]"></span>
+<span class="w-2 h-2 rounded-full bg-[#E2DED0]"></span>
+<span class="w-2 h-2 rounded-full bg-[#2C2C2C]"></span>
+</div>
+</div>
+</div>
+<!-- Product 3 -->
+<div class="group flex flex-col rounded-lg overflow-hidden border border-[#E2DDD5]/50 shadow-[0_4px_12px_rgba(0,0,0,0.05)] bg-[#EFECE6] p-3 md:p-4 transition-transform duration-500 hover:-translate-y-1">
+<div class="card-image-container relative bg-surface-container-low aspect-[3/4] overflow-hidden">
+<img alt="Pleated Wide-Leg Trousers" class="w-full h-full object-cover hover-zoom rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiqYrlvTIoMFH413VG6QYa4Xyz3qguKKNAlNIkId0KqXjWDD0I0cL0auPsOKEWJmPNig1gmFomvsL4n3jW7FSo2E4HT8WAIQda3Q9w4wfLq8DqGnFtapNvP9dixuSz9SO_dAd82hjf47txoQ6lyYcEZ3XISNGYtn5rqk4mcKSxFmhk3K1A1E0-Xe5yk1vCBRrM8aSPUmsIKD_m0zRLBNSKY6MJMkkmxv6B5PU53A1J2Z1OymECgmOExZhRXzACHIpmy5rxI_mJCPXSDQ"/>
+<div class="absolute top-6 left-6 bg-white/40 backdrop-blur-xl border border-white/60 px-3 py-1 font-label-caps text-[9px] tracking-[0.2em] uppercase">RESTOCKED</div>
+<div class="absolute top-6 right-6 flex flex-col gap-3 hover-reveal">
+<button class="w-10 h-10 rounded-full bg-white/40 backdrop-blur-xl border border-white/60 flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-white/40 backdrop-blur-xl border border-white/60 flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</div>
+<button class="absolute bottom-0 left-0 w-full bg-white/40 backdrop-blur-xl border-t border-white/60 py-4 font-label-caps text-[10px] tracking-[0.2em] quick-add-bar hover:bg-primary hover:text-on-primary transition-colors">
+                + QUICK ADD
+            </button>
+</div>
+<div class="mt-8 space-y-2">
+<p class="font-label-caps text-[10px] text-secondary uppercase tracking-[0.2em]">Pants</p>
+<h3 class="font-display-lg text-[24px] tracking-wider text-primary">Pleated Wide-Leg Trousers</h3>
+<p class="font-body-md text-body-md text-primary">98,000 Ks</p>
+<div class="flex gap-3 pt-2">
+<span class="w-2 h-2 rounded-full bg-[#3D3D3D]"></span>
+<span class="w-2 h-2 rounded-full bg-[#716B5F]"></span>
+<span class="w-2 h-2 rounded-full bg-[#A39E93]"></span>
+</div>
+</div>
+</div>
+<!-- Product 4 -->
+<div class="group flex flex-col lg:mt-12 rounded-lg overflow-hidden border border-[#E2DDD5]/50 shadow-[0_4px_12px_rgba(0,0,0,0.05)] bg-[#EFECE6] p-3 md:p-4 transition-transform duration-500 hover:-translate-y-1">
+<div class="card-image-container relative bg-surface-container-low aspect-[3/4] overflow-hidden">
+<img alt="Washed Cotton Utility Jacket" class="w-full h-full object-cover hover-zoom" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHQuxI30xc02pSAmSG8_P6hYjZpdskJYD2x8dBcVFQk8H4VwfpQ7QCTZAA0cRZzBSdJSx589ORXHiqBCBEWHcmCglfq5zd2VW3pVYUmFj913MnsZkkI_SfZ4TIvEbSKDVL8FfWk5SAY98lnzV12EDs5qsuvY7PlFRaUHw6irbtPBctcNwYWYiXNw7i6O5jVu6upJl1oGCFBi2SwSxu9kzTxJLeWZhRxkHlC2-Pj8D1hPgBv3FIIUNm6dHfbEgUejkPDmVLt810joNDfw"/>
+<div class="absolute top-6 left-6 bg-white/40 backdrop-blur-xl border border-white/60 px-3 py-1 font-label-caps text-[9px] tracking-[0.2em] uppercase">LIMITED</div>
+<div class="absolute top-6 right-6 flex flex-col gap-3 hover-reveal">
+<button class="w-10 h-10 rounded-full bg-white/40 backdrop-blur-xl border border-white/60 flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-white/40 backdrop-blur-xl border border-white/60 flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</div>
+<button class="absolute bottom-0 left-0 w-full bg-white/40 backdrop-blur-xl border-t border-white/60 py-4 font-label-caps text-[10px] tracking-[0.2em] quick-add-bar hover:bg-primary hover:text-on-primary transition-colors">
+                + QUICK ADD
+            </button>
+</div>
+<div class="mt-8 space-y-2">
+<p class="font-label-caps text-[10px] text-secondary uppercase tracking-[0.2em]">Jackets</p>
+<h3 class="font-display-lg text-[24px] tracking-wider text-primary">Washed Cotton Utility Jacket</h3>
+<p class="font-body-md text-body-md text-primary">125,000 Ks</p>
+<div class="flex gap-3 pt-2">
+<span class="w-2 h-2 rounded-full bg-[#5C5C5C]"></span>
+<span class="w-2 h-2 rounded-full bg-[#8B7E66]"></span>
+<span class="w-2 h-2 rounded-full bg-[#1A1A1A]"></span>
+</div>
+</div>
+</div>
+</div></section>
+</main>
+<!-- Footer -->
+<footer aria-labelledby="footer-heading" class="w-full bg-[#121212] pt-stack-xl pb-stack-md text-white overflow-hidden">
+<h2 class="sr-only" id="footer-heading">Footer Navigation</h2>
+<div class="max-w-container-max mx-auto px-6 md:px-margin-desktop">
+<!-- Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-stack-lg">
+<!-- Column 1: Brand & Social -->
+<div class="flex flex-col space-y-8">
+<div class="font-display-lg text-headline-md text-white tracking-tighter">RESTYLE</div>
+<p class="font-body-md text-neutral-400 max-w-xs leading-relaxed">
+                        Redefine Your Style with ReStyle. We craft more than garments; we construct an identity rooted in architectural precision and quiet luxury.
+                    </p>
+<nav aria-label="Social Media Links">
+<ul class="flex items-center gap-5">
+<li>
+<a aria-label="Facebook" class="w-11 h-11 rounded-full bg-white flex items-center justify-center hover:scale-105 hover:bg-neutral-100 transition-all duration-200 cursor-pointer" href="#" rel="noopener noreferrer" target="_blank">
+<svg aria-hidden="true" class="w-5 h-5 text-black" fill="currentColor" viewbox="0 0 24 24">
+<path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"></path>
+</svg>
+</a>
+</li>
+<li>
+<a aria-label="Instagram" class="w-11 h-11 rounded-full bg-white flex items-center justify-center hover:scale-105 hover:bg-neutral-100 transition-all duration-200 cursor-pointer" href="#" rel="noopener noreferrer" target="_blank">
+<svg aria-hidden="true" class="w-5 h-5 text-black" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<rect height="18" rx="5" ry="5" width="18" x="3" y="3"></rect>
+<path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"></path>
+<line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+</svg>
+</a>
+</li>
+<li>
+<a aria-label="TikTok" class="w-11 h-11 rounded-full bg-white flex items-center justify-center hover:scale-105 hover:bg-neutral-100 transition-all duration-200 cursor-pointer" href="#" rel="noopener noreferrer" target="_blank">
+<svg aria-hidden="true" class="w-5 h-5 text-black" fill="currentColor" viewbox="0 0 24 24">
+<path d="M12.525.02c1.31 0 2.591.405 3.666 1.152.145.103.263.239.348.398.085.159.125.337.117.516-.033 1.209.244 2.414.801 3.482.557 1.068 1.412 1.938 2.468 2.51.153.082.285.2.386.344.101.144.164.31.184.485.064 1.082.075 2.17.033 3.252-.01.213-.082.419-.208.592-.126.173-.302.302-.505.371-1.346.458-2.782.521-4.16.184V17.11c.006 1.528-.441 3.022-1.284 4.291-.843 1.269-2.052 2.243-3.473 2.8-.14.055-.29.082-.441.08-.151-.002-.3-.033-.437-.092-1.551-.667-2.826-1.81-3.66-3.282-.834-1.472-1.212-3.164-1.085-4.858.127-1.694.794-3.283 1.914-4.563 1.12-1.28 2.614-2.16 4.288-2.525.186-.04.379-.037.563.01.184.046.352.143.488.28.136.137.23.307.273.494.043.187.037.382-.017.566-.31 1.056-.31 2.176 0 3.232.054.184.06.379.017.566-.043.187-.137.357-.273.494-.136.137-.304.234-.488.28-.184.047-.377.05-.563.01-1.082-.236-2.048.336-2.774 1.152-.726.816-1.158 1.845-1.24 2.944-.082 1.099.163 2.198.704 3.154.541.956 1.369 1.698 2.376 2.132.923-.362 1.708-.995 2.255-1.818.547-.823.837-1.793.833-2.784V1.1c0-.292.116-.571.322-.777A1.098 1.098 0 0112.525.02z"></path>
+</svg>
+</a>
+</li>
+</ul>
+</nav>
+</div>
+<!-- Column 2: Useful Links -->
+<nav aria-label="Useful Links" class="flex flex-col space-y-6">
+<h3 class="font-label-caps text-label-caps tracking-widest text-white uppercase border-b border-white/10 pb-4">Useful Links</h3>
+<ul class="flex flex-col space-y-4">
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="about.html">About Us</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="contact.html">Contact Us</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="collections.html">Products</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="account.html">Login</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="account.html#signup">Sign Up</a></li>
+</ul>
+</nav>
+<!-- Column 3: Custom Area -->
+<nav aria-label="Customer Account Links" class="flex flex-col space-y-6">
+<h3 class="font-label-caps text-label-caps tracking-widest text-white uppercase border-b border-white/10 pb-4">Custom Area</h3>
+<ul class="flex flex-col space-y-4">
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="account.html">My Account</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="info.html?p=tracking">Tracking List</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="info.html?p=privacy">Privacy Policy</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="info.html?p=orders">Orders</a></li>
+<li class=""><a class="font-body-md text-neutral-400 hover:text-white transition-colors duration-300" href="cart.html">My Cart</a></li>
+</ul>
+</nav>
+<!-- Column 4: More Information & Payments -->
+<div class="flex flex-col space-y-6">
+<h3 class="font-label-caps text-label-caps tracking-widest text-white uppercase border-b border-white/10 pb-4">More Information</h3>
+<p class="font-body-md text-neutral-400 leading-relaxed">
+                        Sign up for our atelier newsletter to receive exclusive updates on seasonal collections and private tailoring sessions.
+                    </p>
+<form class="flex gap-2" data-form="newsletter">
+<label class="sr-only" for="nl-email">Email address</label>
+<input id="nl-email" name="email" type="email" required placeholder="Email Address" class="flex-1 min-w-0 bg-transparent border border-white/20 rounded-lg px-4 py-3 text-sm text-white placeholder:text-neutral-500 focus:ring-1 focus:ring-white focus:border-white"/>
+<button type="submit" class="px-4 border border-white/20 rounded-lg hover:bg-white hover:text-black transition-colors" aria-label="Subscribe"><span class="material-symbols-outlined text-[20px]">arrow_forward</span></button>
+</form>
+<div aria-label="Accepted Payment Methods" class="pt-4 flex flex-wrap gap-4">
+<div class="h-8 w-12 bg-white/10 rounded flex items-center justify-center group hover:bg-white transition-colors duration-500">
+<span class="material-symbols-outlined text-[20px] text-white group-hover:text-primary" data-icon="credit_card">credit_card</span>
+</div>
+<div class="h-8 w-12 bg-white/10 rounded flex items-center justify-center group hover:bg-white transition-colors duration-500">
+<span class="material-symbols-outlined text-[20px] text-white group-hover:text-primary" data-icon="account_balance">account_balance</span>
+</div>
+<div class="h-8 w-12 bg-white/10 rounded flex items-center justify-center group hover:bg-white transition-colors duration-500">
+<span class="material-symbols-outlined text-[20px] text-white group-hover:text-primary" data-icon="payments">payments</span>
+</div>
+<div class="h-8 w-12 bg-white/10 rounded flex items-center justify-center group hover:bg-white transition-colors duration-500">
+<span class="material-symbols-outlined text-[20px] text-white group-hover:text-primary" data-icon="wallet">wallet</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Bar -->
+<div class="border-t border-white/10 pt-8 flex flex-col items-center justify-center">
+<p class="font-label-caps text-[10px] tracking-widest text-neutral-500 text-center">
+                    COPYRIGHT © RESTYLE - DESIGNED BY DIGITAL QUEEN, 2024
+                </p>
+</div>
+</div>
+</footer>
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Intersection Observer for reveal animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.15 });
+
+            document.querySelectorAll('.reveal-up, .fade-in-up').forEach(el => observer.observe(el));
+
+            // Parallax Scroll Effect
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const parallaxElements = document.querySelectorAll('.parallax-element');
+                
+                parallaxElements.forEach(el => {
+                    const speed = parseFloat(el.getAttribute('data-speed')) || 0;
+                    const yPos = -(scrolled * speed * 20); // Multiplied for noticeable effect
+                    el.style.transform = `translateY(${yPos}px)`;
+                });
+
+                // Header shrink effect
+                const nav = document.querySelector('header');
+                if (scrolled > 50) {
+                    nav.classList.add('h-16');
+                    nav.classList.remove('h-20');
+                } else {
+                    nav.classList.add('h-20');
+                    nav.classList.remove('h-16');
+                }
+            });
+        });
+    </script>
+
+
+
+</body></html>
