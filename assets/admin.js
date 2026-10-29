@@ -55,7 +55,7 @@
     return out;
   }
 
-  const state = { view: null, orders: null, products: null, enquiries: null, staff: null, promotions: null, memberFilter: 'all', orderFilter: 'all', orderQuery: '', productQuery: '', productFilter: 'all', enquiryFilter: 'open' };
+  const state = { view: null, orders: null, products: null, enquiries: null, staff: null, promotions: null, couponUses: {}, memberFilter: 'all', orderFilter: 'all', orderQuery: '', productQuery: '', productFilter: 'all', enquiryFilter: 'open' };
   const can = (viewId) => VIEWS.find((v) => v.id === viewId).roles.includes(session.user.role);
 
   // ---------------------------------------------------------------- feedback
@@ -203,6 +203,7 @@
     const out = await api(action);
     state[kind] = out[kind];
     loadedAt[kind] = Date.now();
+    if (kind === 'promotions') state.couponUses = out.couponUses || {};
     // Newest first by real date, even if a date in the Sheet was typed by hand as text
     if (kind === 'orders') state.orders.sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
   }
@@ -368,7 +369,7 @@
       const counts = TIER_ORDER.reduce((m, n) => ({ ...m, [n]: members.filter((x) => x.tier === n).length }), {});
       const shown = members.filter((x) => state.memberFilter === 'all' || x.tier === state.memberFilter);
 
-      main.innerHTML = header('Promotions', 'Membership discounts and bundle offers. Changes reach the shop within a minute, and every order is re-checked by the Sheet.') + `
+      main.innerHTML = header('Promotions', 'Membership discounts, bundle offers and coupon codes. Changes reach the shop within a minute, and every order is re-checked by the Sheet.') + `
         <section class="ad-sec" style="border-top:0;padding-top:0" aria-labelledby="pr-m">
           <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
             <div><h2 class="ad-h2" id="pr-m">Membership tiers</h2><p class="text-sm text-on-surface-variant mt-1">Based on each customer’s total spend on paid orders, matched by phone number.</p></div>
@@ -404,6 +405,22 @@
             </article>`; }).join('')}</div>` : emptyHtml('redeem', 'No bundles yet', 'Pair pieces that go together, e.g. a jacket and trousers for 10% off.')}
         </section>
 
+        <section class="ad-sec" aria-labelledby="pr-c">
+          <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+            <div><h2 class="ad-h2" id="pr-c">Coupon codes</h2><p class="text-sm text-on-surface-variant mt-1">Codes customers type at checkout. They're never shown on the site — share them yourself (Facebook, Viber, receipts). Applied after bundle and member savings.</p></div>
+            <button class="ad-btn dark" id="pr-add-coupon"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">add</span>Add coupon</button>
+          </div>
+          ${(promo.coupons || []).length ? `<div class="grid gap-3">${promo.coupons.map((c) => { const st = couponStatus(c); return `<article class="ad-bundle${st.live ? '' : ' is-hidden'}">
+            <span class="ad-code">${esc(c.code)}</span>
+            <div class="min-w-0 flex-1"><p class="font-semibold text-sm">${c.type === 'amount' ? fmt(c.value) : c.value + '%'} off <span class="rs-pill ml-1" data-status="${st.pill}">${esc(st.label)}</span></p>
+              <p class="text-xs text-on-surface-variant mt-1 rs-num">${[c.minSpend ? 'Min. spend ' + fmt(c.minSpend) : 'No minimum', c.expires ? 'Until ' + day(c.expires) : 'No expiry', c.maxUses ? 'Used ' + (state.couponUses[c.code] || 0) + ' of ' + c.maxUses : 'Used ' + (state.couponUses[c.code] || 0) + ' time' + ((state.couponUses[c.code] || 0) === 1 ? '' : 's')].join(' · ')}</p></div>
+            <div class="ad-prod-actions">
+              <button class="ad-btn sm" data-ccopy="${esc(c.code)}" aria-label="Copy code ${esc(c.code)}"><span class="material-symbols-outlined text-[16px]" aria-hidden="true">content_copy</span>Copy</button>
+              <label class="ad-toggle"><input type="checkbox" data-cactive="${esc(c.id)}" ${c.active ? 'checked' : ''}/><span></span>On</label>
+              <button class="ad-btn sm" data-cedit="${esc(c.id)}"><span class="material-symbols-outlined text-[16px]" aria-hidden="true">edit</span>Edit</button></div>
+          </article>`; }).join('')}</div>` : emptyHtml('confirmation_number', 'No coupon codes yet', 'Create one, e.g. WELCOME10 for 10% off a first order.')}
+        </section>
+
         <section class="ad-sec" aria-labelledby="pr-mem">
           <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
             <div><h2 class="ad-h2" id="pr-mem">Members</h2><p class="text-sm text-on-surface-variant mt-1">Customers by phone number, from orders that are paid, packed, shipped or delivered.</p></div>
@@ -431,7 +448,7 @@
         err.hidden = !msg; err.textContent = msg;
         if (msg) return;
         busy(e.currentTarget, async () => {
-          await savePromotions({ ...promo, membership: $('#pr-on', main).checked, tiers });
+          await savePromotions({ ...promo, coupons: promo.coupons || [], membership: $('#pr-on', main).checked, tiers });
           toast(state.promotions.membership ? 'Membership saved and live on the shop' : 'Membership saved (switched off)');
           render();
         });
@@ -444,6 +461,20 @@
           await savePromotions({ ...promo, bundles: promo.bundles.map((b) => (b.id === box.dataset.bactive ? { ...b, active: box.checked } : b)) });
           toast(box.checked ? 'Bundle is on the shop' : 'Bundle paused');
           box.closest('.ad-bundle').classList.toggle('is-hidden', !box.checked);
+        } catch (err) { box.checked = !box.checked; if (err.message !== 'Signed out') toast(err.message, 'error'); }
+        box.disabled = false;
+      }));
+      $('#pr-add-coupon', main).addEventListener('click', () => editCoupon(null));
+      $$('[data-cedit]', main).forEach((b) => b.addEventListener('click', () => editCoupon(promo.coupons.find((x) => x.id === b.dataset.cedit))));
+      $$('[data-ccopy]', main).forEach((b) => b.addEventListener('click', async () => {
+        try { await navigator.clipboard.writeText(b.dataset.ccopy); toast(b.dataset.ccopy + ' copied'); } catch (e) { toast('Couldn’t copy — your browser blocked it', 'error'); }
+      }));
+      $$('[data-cactive]', main).forEach((box) => box.addEventListener('change', async () => {
+        box.disabled = true;
+        try {
+          await savePromotions({ ...promo, coupons: promo.coupons.map((c) => (c.id === box.dataset.cactive ? { ...c, active: box.checked } : c)) });
+          toast(box.checked ? 'Coupon switched on' : 'Coupon paused');
+          VIEWS_RENDER.promotions(main); bindCommon(main);
         } catch (err) { box.checked = !box.checked; if (err.message !== 'Signed out') toast(err.message, 'error'); }
         box.disabled = false;
       }));
@@ -577,6 +608,7 @@
   async function savePromotions(next) {
     const out = await api('promotions.save', { promotions: next });
     state.promotions = out.promotions;
+    if (out.couponUses) state.couponUses = out.couponUses;
     return out.promotions;
   }
 
@@ -637,6 +669,70 @@
       const next = { id: data.id, name: name.value.trim(), items, percent: Number(pct.value), active: $('#bu-active', box).checked };
       const bundles = isNew ? [...state.promotions.bundles, next] : state.promotions.bundles.map((x) => (x.id === data.id ? next : x));
       busy($('button[type=submit]', e.target), async () => { await savePromotions({ ...state.promotions, bundles }); toast(next.name + (isNew ? ' added' : ' saved')); closePanel(); render(); });
+    });
+  }
+
+  // A coupon's state as the shop sees it today
+  function couponStatus(c) {
+    const today = new Date().toISOString().slice(0, 10);
+    const used = state.couponUses[c.code] || 0;
+    if (!c.active) return { live: false, label: 'Paused', pill: 'Cancelled' };
+    if (c.expires && today > c.expires) return { live: false, label: 'Expired', pill: 'Cancelled' };
+    if (c.maxUses && used >= c.maxUses) return { live: false, label: 'Used up', pill: 'Cancelled' };
+    return { live: true, label: 'Live', pill: 'Delivered' };
+  }
+
+  function editCoupon(c) {
+    const isNew = !c;
+    const data = c ? { ...c } : { code: '', type: 'percent', value: 10, minSpend: 0, maxUses: 0, expires: '', active: true };
+    const box = panel(`<h2 class="font-display-lg text-3xl mb-6 pr-10">${isNew ? 'Add coupon' : 'Edit coupon'}</h2>
+      <form id="cp-form" class="ad-form" novalidate>
+        ${input('cp-code', 'Code', `value="${esc(data.code)}" required maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="e.g. WELCOME10" style="text-transform:uppercase;letter-spacing:.12em"`, 'Letters, numbers or dashes. Customers type this at checkout.')}
+        <div class="grid grid-cols-[1fr_auto] gap-3 items-end">
+          ${input('cp-value', 'Discount', `type="number" inputmode="decimal" min="1" step="0.5" value="${esc(data.value)}" required`)}
+          <div><label class="sr-only" for="cp-type">Discount type</label><select id="cp-type" class="ad-input" style="width:auto"><option value="percent" ${data.type === 'percent' ? 'selected' : ''}>% off</option><option value="amount" ${data.type === 'amount' ? 'selected' : ''}>Ks off</option></select></div>
+        </div>
+        <div class="grid sm:grid-cols-3 gap-4">
+          ${input('cp-min', 'Minimum spend (Ks)', `type="number" inputmode="numeric" min="0" step="1000" value="${esc(data.minSpend || '')}" placeholder="None"`)}
+          ${input('cp-max', 'Usage limit', `type="number" inputmode="numeric" min="0" step="1" value="${esc(data.maxUses || '')}" placeholder="Unlimited"`)}
+          ${input('cp-exp', 'Expires after', `type="date" value="${esc(data.expires)}"`)}
+        </div>
+        <p class="ad-note" id="cp-preview" aria-live="polite"></p>
+        <label class="ad-toggle"><input type="checkbox" id="cp-active" ${data.active ? 'checked' : ''}/><span></span>Code works at checkout</label>
+        <div class="flex flex-wrap gap-3 justify-between pt-2">
+          ${isNew ? '<span></span>' : '<button type="button" class="ad-btn danger" id="cp-delete"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">delete</span>Delete</button>'}
+          <div class="flex gap-3"><button type="button" class="ad-btn" data-close>Cancel</button><button type="submit" class="ad-btn dark">${isNew ? 'Add coupon' : 'Save coupon'}</button></div>
+        </div>
+      </form>`, { label: isNew ? 'Add coupon' : 'Edit coupon ' + data.code });
+
+    const read = () => ({ code: $('#cp-code', box).value.trim().toUpperCase(), type: $('#cp-type', box).value, value: Number($('#cp-value', box).value) || 0,
+      minSpend: Number($('#cp-min', box).value) || 0, maxUses: Number($('#cp-max', box).value) || 0, expires: $('#cp-exp', box).value, active: $('#cp-active', box).checked });
+    const preview = () => {
+      const x = read();
+      const deal = x.type === 'amount' ? fmt(x.value) : x.value + '%';
+      $('#cp-preview', box).innerHTML = `<span class="material-symbols-outlined" aria-hidden="true">confirmation_number</span><span>Code <strong>${esc(x.code || '…')}</strong> takes <strong>${esc(deal)}</strong> off${x.minSpend ? ` orders of ${fmt(x.minSpend)} or more` : ' any order'}${x.maxUses === 1 ? ', for one order only' : x.maxUses ? `, for the first ${x.maxUses} orders` : ''}${x.expires ? `, until ${esc(day(x.expires))}` : ''}.</span>`;
+    };
+    preview();
+    $$('#cp-form input, #cp-form select', box).forEach((el) => el.addEventListener('input', preview));
+
+    if (!isNew) $('#cp-delete', box).addEventListener('click', async () => {
+      if (!await confirmBox('Delete ' + data.code + '?', 'Customers can’t use it any more. Orders that already used it keep their discount.', 'Delete')) return editCoupon(c);
+      const ok = await busy(null, async () => { await savePromotions({ ...state.promotions, coupons: state.promotions.coupons.filter((x) => x.id !== data.id) }); return true; });
+      if (ok) { toast(data.code + ' deleted'); render(); }
+    });
+
+    $('#cp-form', box).addEventListener('submit', (e) => {
+      e.preventDefault();
+      const x = read();
+      const taken = state.promotions.coupons.some((o) => o.code === x.code && o.id !== data.id);
+      const ok = [
+        fieldError($('#cp-code', box), !/^[A-Z0-9-]{3,20}$/.test(x.code) ? 'Use 3–20 letters, numbers or dashes.' : taken ? 'That code already exists.' : ''),
+        fieldError($('#cp-value', box), !(x.value > 0) ? 'Enter a discount above 0.' : x.type === 'percent' && x.value > 90 ? 'A % discount can be at most 90%.' : ''),
+      ].every(Boolean);
+      if (!ok) return $('[aria-invalid=true]', box).focus();
+      const next = { ...x, id: data.id };
+      const coupons = isNew ? [...state.promotions.coupons, next] : state.promotions.coupons.map((o) => (o.id === data.id ? next : o));
+      busy($('button[type=submit]', e.target), async () => { await savePromotions({ ...state.promotions, coupons }); toast(x.code + (isNew ? ' added' : ' saved')); closePanel(); render(); });
     });
   }
 

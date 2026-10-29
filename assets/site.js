@@ -21,11 +21,12 @@
   const STATIC_PRODUCTS = PRODUCTS.slice();
   const LIVE_MAX_AGE = 60 * 1000;
   let liveInUse = false;
+  let checkoutRefresh = null; // set by renderCheckout
   const useLive = (list) => { if (Array.isArray(list) && list.length) { PRODUCTS.length = 0; list.forEach((p) => PRODUCTS.push(p)); liveInUse = true; } };
   let liveCache = load('live', null);
   if (liveCache) useLive(liveCache.products);
   // Bundles and membership tiers come with the product list (see Code.gs publicPromotions_)
-  const NO_PROMOS = { membership: false, tiers: [], bundles: [] };
+  const NO_PROMOS = { membership: false, tiers: [], bundles: [], coupons: false };
   let PROMOS = (liveCache && liveCache.promotions) || NO_PROMOS;
   function refreshLive(onChange, force) {
     if (!CONFIG.ORDER_ENDPOINT || (!force && liveCache && Date.now() - liveCache.at < LIVE_MAX_AGE)) return;
@@ -56,7 +57,7 @@
   // The pricing rule, the same as promoTotals_ in Code.gs (the Sheet re-checks every order).
   // Each complete set of a bundle's pieces gets its % off; a piece counts towards one bundle, best discount first.
   // A member discount then applies to what's left.
-  function promoTotals(items, tier) {
+  function promoTotals(items, tier, coupon) {
     const price = {}, left = {};
     let subtotal = 0;
     items.forEach((i) => { price[i.id] = i.price; left[i.id] = (left[i.id] || 0) + i.qty; subtotal += i.price * i.qty; });
@@ -72,14 +73,18 @@
     const base = subtotal - bundleDiscount;
     let memberDiscount = 0;
     if (tier && PROMOS.membership) memberDiscount = tier.type === 'amount' ? Math.min(Math.round(tier.value), base) : Math.round(base * tier.value / 100);
-    return { subtotal, bundles, bundleDiscount, tierName: memberDiscount ? tier.name : '', memberDiscount, total: base - memberDiscount + (CONFIG.DELIVERY_FEE || 0) };
+    const afterMember = base - memberDiscount;
+    let couponDiscount = 0;
+    if (coupon) couponDiscount = coupon.type === 'amount' ? Math.min(Math.round(coupon.value), afterMember) : Math.round(afterMember * coupon.value / 100);
+    return { subtotal, bundles, bundleDiscount, tierName: memberDiscount ? tier.name : '', memberDiscount, couponCode: couponDiscount ? coupon.code : '', couponDiscount, total: afterMember - couponDiscount + (CONFIG.DELIVERY_FEE || 0) };
   }
   const priced = (lines) => lines.map((i) => ({ ...i, price: byId(i.id).price }));
   const tierDeal = (t) => (t.type === 'amount' ? fmt(t.value) + ' off' : t.value + '% off');
   const tierBadge = (name) => `<span class="rs-tier" data-tier="${esc(name)}">${esc(name)}</span>`;
-  // Lines for a summary box: bundle savings and the member discount
+  // Lines for a summary box: bundle savings, the member discount and a coupon
   const discountRows = (t, cls) => t.bundles.map((b) => `<div class="flex justify-between gap-4 ${cls} rs-disc"><span>Bundle: ${esc(b.name)}${b.sets > 1 ? ' × ' + b.sets : ''}</span><span>−${fmt(b.discount)}</span></div>`).join('')
-    + (t.memberDiscount ? `<div class="flex justify-between gap-4 ${cls} rs-disc"><span>${esc(t.tierName)} member</span><span>−${fmt(t.memberDiscount)}</span></div>` : '');
+    + (t.memberDiscount ? `<div class="flex justify-between gap-4 ${cls} rs-disc"><span>${esc(t.tierName)} member</span><span>−${fmt(t.memberDiscount)}</span></div>` : '')
+    + (t.couponDiscount ? `<div class="flex justify-between gap-4 ${cls} rs-disc"><span>Coupon ${esc(t.couponCode)}</span><span>−${fmt(t.couponDiscount)}</span></div>` : '');
 
   // "Member privileges" button with a popover listing the tiers. align: 'left' | 'right'; up: open above.
   let tipCount = 0;
@@ -723,7 +728,8 @@
     const cart = validLines();
     if (!cart.length) { root.innerHTML = emptyState('shopping_bag', 'Your bag is empty', 'Add a piece before checking out.'); return; }
     let member = null; // { tier, next } from the Sheet for the phone entered
-    const totalsNow = () => promoTotals(priced(validLines()), member && member.tier);
+    let coupon = null; // { code, type, value } once a code is applied
+    const totalsNow = () => promoTotals(priced(validLines()), member && member.tier, coupon);
     const total = totalsNow().total;
     const saved = load('billing', {});
     const inputCls = 'w-full border border-black/20 rounded-md px-4 py-3 text-base sm:text-sm bg-white focus:border-black focus:ring-1 focus:ring-black transition-colors';
@@ -763,6 +769,7 @@
           ${cart.map((i) => `<div class="flex justify-between items-center gap-4 text-sm py-4 border-b border-dashed border-black/10"><span class="flex items-center gap-3 min-w-0"><img src="${byId(i.id).img}" alt="" class="w-10 h-12 object-cover rounded shrink-0"/><span class="text-on-surface-variant">${esc(lineLabel(i))} <strong class="text-primary">× ${i.qty}</strong></span></span><span class="whitespace-nowrap">${fmt(byId(i.id).price * i.qty)}</span></div>`).join('')}
           <div id="co-totals"></div>
           <div id="co-member" class="mt-2" aria-live="polite"></div>
+          <div id="co-coupon" class="mt-4"></div>
           <div class="border border-black/10 border-l-2 border-l-amber-700 rounded-md mt-6 bg-white">
             <label class="flex items-center gap-3 px-4 py-4 border-b border-black/10 text-sm cursor-pointer">
               <input type="radio" name="payment" value="${esc(CONFIG.PAYMENT.title)}" checked class="text-amber-700 focus:ring-amber-700"/>${esc(CONFIG.PAYMENT.title)}</label>
@@ -780,7 +787,7 @@
     const drawTotals = () => {
       const t = totalsNow();
       $('#co-totals').innerHTML = `<div class="flex justify-between text-sm py-4 border-b border-dashed border-black/10"><span>Subtotal</span><span>${fmt(t.subtotal)}</span></div>
-        ${t.bundles.length || t.memberDiscount ? `<div class="py-3 border-b border-dashed border-black/10 space-y-2">${discountRows(t, 'text-sm')}</div>` : ''}
+        ${t.bundles.length || t.memberDiscount || t.couponDiscount ? `<div class="py-3 border-b border-dashed border-black/10 space-y-2">${discountRows(t, 'text-sm')}</div>` : ''}
         ${CONFIG.DELIVERY_FEE ? `<div class="flex justify-between text-sm py-4 border-b border-dashed border-black/10"><span>Delivery</span><span>${fmt(CONFIG.DELIVERY_FEE)}</span></div>` : ''}
         <div class="flex justify-between items-baseline font-semibold py-4"><span class="text-sm">Total</span><span class="font-display-lg text-2xl">${fmt(t.total)}</span></div>`;
       const box = $('#co-member');
@@ -800,6 +807,43 @@
     };
     phoneInput.addEventListener('change', checkMember);
     if (phoneInput.value) checkMember();
+    // Coupon box, shown once the shop has live coupon codes. A code is checked with the Sheet when applied,
+    // and again when the order is placed.
+    const couponBox = $('#co-coupon');
+    const couponDeal = (c) => (c.type === 'amount' ? fmt(c.value) : c.value + '%') + ' off';
+    const drawCoupon = (msg, isError) => {
+      if (!PROMOS.coupons) { couponBox.innerHTML = ''; return; }
+      if (coupon) {
+        couponBox.innerHTML = `<div class="rs-bundle text-sm flex items-center justify-between gap-3"><span class="flex items-center gap-2 min-w-0"><span class="material-symbols-outlined text-[18px] rs-disc" aria-hidden="true">confirmation_number</span><span><strong>${esc(coupon.code)}</strong> applied — ${esc(couponDeal(coupon))}</span></span>
+          <button type="button" class="text-xs underline underline-offset-4 py-2 shrink-0" id="co-coupon-remove">Remove</button></div>`;
+        $('#co-coupon-remove').addEventListener('click', () => { coupon = null; drawCoupon(); drawTotals(); $('#co-coupon-code').focus(); });
+        return;
+      }
+      couponBox.innerHTML = `<label for="co-coupon-code" class="block text-xs font-semibold mb-2">Coupon code <span class="font-normal text-on-surface-variant">(optional)</span></label>
+        <div class="flex gap-2"><input id="co-coupon-code" class="${inputCls} uppercase tracking-[0.12em]" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="20" ${isError ? 'aria-invalid="true"' : ''} aria-describedby="co-coupon-msg"/>
+          <button type="button" id="co-coupon-apply" class="px-5 min-h-[44px] rounded-md border border-black/20 bg-white text-sm font-semibold hover:border-black transition-colors shrink-0">Apply</button></div>
+        <p id="co-coupon-msg" class="${isError ? 'rs-field-msg' : 'text-xs text-on-surface-variant mt-2'}" role="${isError ? 'alert' : 'status'}" ${msg ? '' : 'hidden'}>${esc(msg || '')}</p>`;
+      const inp = $('#co-coupon-code'), go = $('#co-coupon-apply');
+      const apply = async () => {
+        const code = inp.value.trim().toUpperCase();
+        if (!code) { inp.focus(); return; }
+        go.disabled = true; go.innerHTML = '<span class="rs-spinner" aria-hidden="true" style="margin:0"></span><span class="sr-only">Checking</span>';
+        const t = promoTotals(priced(validLines()), member && member.tier);
+        try {
+          const r = await postApi({ action: 'coupon', code, spend: t.subtotal - t.bundleDiscount, phone: phoneInput.value });
+          coupon = r.coupon; drawCoupon(); drawTotals(); toast(code + ' applied — ' + couponDeal(coupon));
+        } catch (ex) {
+          drawCoupon(ex.message, true);
+          const again = $('#co-coupon-code'); again.value = code; again.focus();
+        }
+      };
+      go.addEventListener('click', apply);
+      inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); apply(); } });
+    };
+    drawCoupon();
+    // Fresh promotions can arrive after the page has drawn (first visit). Redraw the totals, and add the
+    // coupon box if it wasn't there yet — never redraw it under someone typing a code.
+    checkoutRefresh = () => { if (PROMOS.coupons && !couponBox.innerHTML) drawCoupon(); drawTotals(); };
     let tried = false;
     const message = (el) => {
       const label = (form.querySelector('label[for="' + el.id + '"]')?.firstChild?.textContent || 'This field').trim();
@@ -844,7 +888,7 @@
       // Make sure the tier for this exact phone number is known before working out the total
       await checkMember();
       const t = totalsNow();
-      Object.assign(order, { total: t.total, subtotal: t.subtotal, bundles: t.bundles, memberDiscount: t.memberDiscount, tier: t.tierName });
+      Object.assign(order, { total: t.total, subtotal: t.subtotal, bundles: t.bundles, memberDiscount: t.memberDiscount, tier: t.tierName, coupon: coupon ? coupon.code : '', couponDiscount: t.couponDiscount });
       btn.disabled = true; btn.innerHTML = '<span class="rs-spinner" aria-hidden="true"></span>Placing order…';
       try {
         if (CONFIG.ORDER_ENDPOINT) {
@@ -853,7 +897,7 @@
           const out = await res.json();
           if (!out.ok) throw new Error(out.error || 'Order was not accepted');
           // The Sheet's figures are the ones the customer pays
-          Object.assign(order, { total: out.total ?? order.total, memberDiscount: out.memberDiscount ?? order.memberDiscount, tier: out.tier ?? order.tier });
+          Object.assign(order, { total: out.total ?? order.total, memberDiscount: out.memberDiscount ?? order.memberDiscount, tier: out.tier ?? order.tier, couponDiscount: out.couponDiscount ?? order.couponDiscount });
         } else {
           order.test = true;
         }
@@ -867,8 +911,12 @@
           : ex instanceof TypeError ? 'Please check your internet connection.'
           : ex instanceof SyntaxError ? 'Our order system did not respond properly.'
           : ex.message + '.';
+        // The coupon stopped working (expired, used up, below minimum): drop it and show the new total
+        if (/^Coupon /.test(ex.message)) {
+          coupon = null; drawCoupon(ex.message.replace(/^Coupon \S+: /, '').replace(/^./, (c) => c.toUpperCase()), true); drawTotals();
+          err.textContent = ex.message + '. We removed it — check the new total and press Place order again.';
         // The shop changed under the buyer (price, stock): fetch the new catalogue and send them to the bag
-        if (/sold out|no longer available|not available|Prices have changed/.test(ex.message)) {
+        } else if (/sold out|no longer available|not available|Prices have changed/.test(ex.message)) {
           // Prices, stock, bundles or a tier changed: refresh them and forget cached tiers
           refreshLive(() => drawTotals(), true);
           Object.keys(memberCache).forEach((k) => delete memberCache[k]);
@@ -908,9 +956,10 @@
       <h2 class="text-sm font-semibold mb-4">Order details</h2>
       <div class="border border-black/10 rounded-md divide-y divide-black/10 mb-10 text-sm">
         ${o.items.map((i) => `<div class="flex justify-between gap-4 px-5 py-4"><span>${esc(i.name)} - ${esc(i.color)}, ${esc(i.size)} <strong>× ${i.qty}</strong></span><span class="whitespace-nowrap">${fmt(i.price * i.qty)}</span></div>`).join('')}
-        ${(o.bundles && o.bundles.length) || o.memberDiscount ? `<div class="px-5 py-4 space-y-2"><div class="flex justify-between"><span>Subtotal</span><span>${fmt(o.subtotal)}</span></div>
+        ${(o.bundles && o.bundles.length) || o.memberDiscount || o.couponDiscount ? `<div class="px-5 py-4 space-y-2"><div class="flex justify-between"><span>Subtotal</span><span>${fmt(o.subtotal)}</span></div>
           ${(o.bundles || []).map((b) => `<div class="flex justify-between rs-disc"><span>Bundle: ${esc(b.name)}${b.sets > 1 ? ' × ' + b.sets : ''}</span><span>−${fmt(b.discount)}</span></div>`).join('')}
-          ${o.memberDiscount ? `<div class="flex justify-between rs-disc"><span>${esc(o.tier)} member</span><span>−${fmt(o.memberDiscount)}</span></div>` : ''}</div>` : ''}
+          ${o.memberDiscount ? `<div class="flex justify-between rs-disc"><span>${esc(o.tier)} member</span><span>−${fmt(o.memberDiscount)}</span></div>` : ''}
+          ${o.couponDiscount ? `<div class="flex justify-between rs-disc"><span>Coupon ${esc(o.coupon)}</span><span>−${fmt(o.couponDiscount)}</span></div>` : ''}</div>` : ''}
         <div class="flex justify-between px-5 py-4 font-semibold"><span>Total</span><span>${fmt(o.total)}</span></div>
       </div>
       <div class="grid sm:grid-cols-2 gap-6 text-sm mb-12">
@@ -1004,9 +1053,10 @@
         ${o.tracking ? `<div><p class="rs-label mb-1">Tracking no.</p><p class="break-all">${esc(o.tracking)}</p></div>` : ''}
         ${o.deliveryDate ? `<div><p class="rs-label mb-1">Expected delivery</p><p>${esc(date(o.deliveryDate))}</p></div>` : ''}</div>` : ''}
       <ul class="text-sm divide-y divide-dashed divide-black/10 border-t border-black/10">${(o.items || []).map((i) => `<li class="flex justify-between gap-4 py-3"><span>${esc(i.name)}${i.qty ? `${i.color ? ` - ${esc(i.color)}, ${esc(i.size)}` : ''} <strong>× ${i.qty}</strong>` : ''}</span>${i.qty ? `<span class="whitespace-nowrap">${fmt(i.price * i.qty)}</span>` : ''}</li>`).join('')}</ul>
-      ${o.bundleDiscount || o.memberDiscount ? `<div class="text-sm pt-3 border-t border-black/10 space-y-1"><div class="flex justify-between"><span>Subtotal</span><span>${fmt(o.subtotal)}</span></div>
+      ${o.bundleDiscount || o.memberDiscount || o.couponDiscount ? `<div class="text-sm pt-3 border-t border-black/10 space-y-1"><div class="flex justify-between"><span>Subtotal</span><span>${fmt(o.subtotal)}</span></div>
         ${o.bundleDiscount ? `<div class="flex justify-between rs-disc"><span>Bundle savings</span><span>−${fmt(o.bundleDiscount)}</span></div>` : ''}
-        ${o.memberDiscount ? `<div class="flex justify-between rs-disc"><span>${esc(o.memberTier)} member</span><span>−${fmt(o.memberDiscount)}</span></div>` : ''}</div>` : ''}
+        ${o.memberDiscount ? `<div class="flex justify-between rs-disc"><span>${esc(o.memberTier)} member</span><span>−${fmt(o.memberDiscount)}</span></div>` : ''}
+        ${o.couponDiscount ? `<div class="flex justify-between rs-disc"><span>Coupon ${esc(o.coupon)}</span><span>−${fmt(o.couponDiscount)}</span></div>` : ''}</div>` : ''}
       <div class="flex justify-between font-semibold pt-4 border-t border-black/10"><span>Total</span><span>${fmt(o.total)}</span></div></div>`;
   };
 
@@ -1163,12 +1213,13 @@
   syncWishIcons();
   window.addEventListener('storage', updateBadges);
   // Pick up dashboard changes (prices, stock, new pieces). The checkout form is left alone
-  // so typing isn't lost; the server re-checks prices when the order is placed.
+  // so typing isn't lost — only its totals and coupon box update; the server re-checks prices at order time.
   refreshLive(() => {
     fillCatalog(); initCards(); syncCardPrices(); updateBadges(); syncWishIcons(); membershipLink();
     if (page === 'info') renderInfo();
     if (page === 'product') renderProduct();
     if (page === 'cart') renderCart();
     if (page === 'wishlist') renderWishlist();
+    if (page === 'checkout' && checkoutRefresh) checkoutRefresh();
   });
 })();

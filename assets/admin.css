@@ -182,3 +182,5 @@ a.ad-tile:hover { border-color: rgba(0, 0, 0, .3); transform: translateY(-2px); 
 .ad-pick-item img { width: 36px; height: 44px; object-fit: cover; border-radius: 6px; flex: none; }
 .ad-pick-item input:checked + span { border-color: #000; box-shadow: 0 0 0 1px #000; background: #faf8f5; }
 .ad-pick-item input:focus-visible + span { outline: 2px solid #000; outline-offset: 2px; }
+
+.ad-code { display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 10px; background: #121212; color: #fff; font: 700 13px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .12em; flex: none; }
