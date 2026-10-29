@@ -219,3 +219,11 @@ button:disabled { cursor: not-allowed; }
 /* Category tiles are links (see site.js) */
 .bento-card[role="link"] { cursor: pointer; }
 .bento-card[role="link"]:focus-visible { outline: 2px solid #000; outline-offset: 4px; }
+
+/* Tier badges by rank (0 = lowest spend). Works for any tier names the shop sets. */
+.rs-tier[data-rank="0"] { background: linear-gradient(135deg, #f1f2f4, #d5d8dd); color: #3d4450; }
+.rs-tier[data-rank="1"] { background: linear-gradient(135deg, #fbefcc, #e9c771); color: #5e4300; }
+.rs-tier[data-rank="2"] { background: linear-gradient(135deg, #e7eef0, #b9c9cf); color: #203238; }
+.rs-tier[data-rank="3"] { background: linear-gradient(135deg, #f6e4e1, #d9a8a0); color: #5c231a; }
+.rs-tier[data-rank="4"] { background: linear-gradient(135deg, #2b2b2b, #575757); color: #f3efe6; }
+.rs-tip-pop .rs-tier[data-rank="4"] { background: linear-gradient(135deg, #f3efe6, #cfc7b4); color: #222; }

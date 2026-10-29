@@ -80,7 +80,11 @@
   }
   const priced = (lines) => lines.map((i) => ({ ...i, price: byId(i.id).price }));
   const tierDeal = (t) => (t.type === 'amount' ? fmt(t.value) + ' off' : t.value + '% off');
-  const tierBadge = (name) => `<span class="rs-tier" data-tier="${esc(name)}">${esc(name)}</span>`;
+  // Badge colour follows the tier's rank (lowest spend first); names are whatever the shop chose
+  const tierBadge = (name) => {
+    const r = PROMOS.tiers.findIndex((t) => t.name === name);
+    return `<span class="rs-tier" data-rank="${r < 0 ? 0 : r}">${esc(name)}</span>`;
+  };
   // Lines for a summary box: bundle savings, the member discount and a coupon
   const discountRows = (t, cls) => t.bundles.map((b) => `<div class="flex justify-between gap-4 ${cls} rs-disc"><span>Bundle: ${esc(b.name)}${b.sets > 1 ? ' × ' + b.sets : ''}</span><span>−${fmt(b.discount)}</span></div>`).join('')
     + (t.memberDiscount ? `<div class="flex justify-between gap-4 ${cls} rs-disc"><span>${esc(t.tierName)} member</span><span>−${fmt(t.memberDiscount)}</span></div>` : '')

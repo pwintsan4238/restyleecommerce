@@ -130,7 +130,8 @@ a.ad-tile:hover { border-color: rgba(0, 0, 0, .3); transform: translateY(-2px); 
 /* Enquiries */
 .ad-list { display: grid; gap: 10px; }
 .ad-enq { display: flex; gap: 14px; align-items: flex-start; background: #fff; border: 1px solid rgba(0, 0, 0, .06); border-radius: 14px; padding: 16px; flex-wrap: wrap; }
-.ad-enq.is-done { opacity: .6; }
+.ad-enq.is-done { background: #faf9f6; }
+.ad-enq.is-done .ad-enq-ic { opacity: .5; }
 .ad-enq-ic { width: 36px; height: 36px; border-radius: 9999px; background: #f2efe9; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; flex: none; }
 
 /* Forms */
@@ -184,3 +185,13 @@ a.ad-tile:hover { border-color: rgba(0, 0, 0, .3); transform: translateY(-2px); 
 .ad-pick-item input:focus-visible + span { outline: 2px solid #000; outline-offset: 2px; }
 
 .ad-code { display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 10px; background: #121212; color: #fff; font: 700 13px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .12em; flex: none; }
+
+.ad-tier-add { align-content: center; justify-items: center; min-height: 200px; border-style: dashed; border-color: rgba(0,0,0,.18); background: transparent; font-weight: 600; font-size: 14px; color: rgba(0,0,0,.7); cursor: pointer; transition: border-color .2s, background-color .2s; }
+.ad-tier-add:hover { border-color: #000; background: #fff; }
+.ad-colour-row { display: flex; gap: 8px; align-items: center; }
+.ad-colour-code { width: 104px; flex: none; font-family: ui-monospace, Menlo, Consolas, monospace; text-transform: uppercase; }
+@media (max-width: 480px) { .ad-colour-code { width: 88px; } }
+.ad-enq-actions { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; margin-top: 12px; }
+.ad-enq-done { color: #1f6b3a; font-weight: 600; }
+.ad-enq-reply { margin-top: 10px; padding: 10px 12px; border-left: 3px solid #000; background: #f7f5f1; border-radius: 0 10px 10px 0; }
+.ad-composer { margin-top: 12px; padding: 14px; border: 1px solid rgba(0, 0, 0, .12); border-radius: 12px; background: #fcfbf9; }

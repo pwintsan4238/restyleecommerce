@@ -145,6 +145,7 @@
   function route() {
     const want = location.hash.slice(1) || 'overview';
     const view = VIEWS.find((v) => v.id === want && can(v.id)) ? want : 'overview';
+    if (view !== state.view) { state.tierDraft = null; state.tierOn = undefined; }
     state.view = view;
     $$('.ad-nav a').forEach((a) => {
       const on = a.dataset.view === view;
@@ -209,7 +210,7 @@
   }
 
   function bindCommon(main) {
-    $$('[data-refresh]', main).forEach((b) => b.addEventListener('click', () => render(true)));
+    $$('[data-refresh]', main).forEach((b) => b.addEventListener('click', () => { state.tierDraft = null; state.tierOn = undefined; render(true); }));
   }
 
   // Sidebar badges: orders awaiting payment, paid orders to ship, open enquiries
@@ -364,28 +365,35 @@
       const products = state.products || [];
       const byId = (id) => products.find((p) => p.id === id);
       const draft = JSON.parse(JSON.stringify(promo));
-      const tierText = (t) => (t.threshold > 0 && t.value > 0 ? `Customers who have spent <strong class="rs-num">${fmt(t.threshold)}</strong> or more get <strong>${t.type === 'amount' ? fmt(t.value) : t.value + '%'} off</strong> every order.` : 'Switched off (set a spend and a discount to use it).');
+      const draftTiers = state.tierDraft || (state.tierDraft = JSON.parse(JSON.stringify(promo.tiers)));
+      if (state.tierOn !== undefined) draft.membership = state.tierOn;
+      const tierText = (t) => (t.threshold > 0 && t.value > 0 ? `Customers who have spent <strong class="rs-num">${fmt(t.threshold)}</strong> or more get <strong>${t.type === 'amount' ? fmt(t.value) : t.value + '%'} off</strong> every order.` : 'Set a spend and a discount to use this tier.');
       const members = memberList();
-      const counts = TIER_ORDER.reduce((m, n) => ({ ...m, [n]: members.filter((x) => x.tier === n).length }), {});
+      const tierNames = promo.tiers.map((t) => t.name);
+      const counts = tierNames.reduce((m, n) => ({ ...m, [n]: members.filter((x) => x.tier === n).length }), {});
       const shown = members.filter((x) => state.memberFilter === 'all' || x.tier === state.memberFilter);
 
       main.innerHTML = header('Promotions', 'Membership discounts, bundle offers and coupon codes. Changes reach the shop within a minute, and every order is re-checked by the Sheet.') + `
         <section class="ad-sec" style="border-top:0;padding-top:0" aria-labelledby="pr-m">
           <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-            <div><h2 class="ad-h2" id="pr-m">Membership tiers</h2><p class="text-sm text-on-surface-variant mt-1">Based on each customer’s total spend on paid orders, matched by phone number.</p></div>
+            <div><h2 class="ad-h2" id="pr-m">Membership tiers</h2><p class="text-sm text-on-surface-variant mt-1">Name your tiers and set what each one unlocks. Based on each customer’s total spend on paid orders, matched by phone number.</p></div>
             <label class="ad-toggle text-sm"><input type="checkbox" id="pr-on" ${draft.membership ? 'checked' : ''}/><span></span>Membership on</label>
           </div>
-          <div class="grid md:grid-cols-3 gap-4" id="pr-tiers">${draft.tiers.map((t, i) => `<article class="ad-tier" data-tier="${esc(t.name)}">
-            <p class="ad-tier-name"><span class="rs-tier" data-tier="${esc(t.name)}">${esc(t.name)}</span></p>
-            ${input('tr-th-' + i, 'Unlocks at total spend (Ks)', `type="number" inputmode="numeric" min="0" step="1000" value="${t.threshold}" data-th="${i}"`)}
+          <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4" id="pr-tiers">${draftTiers.map((t, i) => `<article class="ad-tier">
+            <div class="flex items-center justify-between gap-2 min-h-[40px]"><span class="rs-tier" data-rank="${i}" data-badge="${i}">${esc(t.name || 'New tier')}</span>
+              ${draftTiers.length > 1 ? `<button type="button" class="ad-icon sm" data-tdel="${i}" aria-label="Remove ${esc(t.name || 'this tier')}"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">delete</span></button>` : ''}</div>
+            ${input('tr-n-' + i, 'Tier name', `value="${esc(t.name)}" maxlength="24" required data-tn="${i}" placeholder="e.g. Silver, VIP, Black Card"`)}
+            ${input('tr-th-' + i, 'Unlocks at total spend (Ks)', `type="number" inputmode="numeric" min="1" step="1000" value="${t.threshold || ''}" data-th="${i}"`)}
             <div class="grid grid-cols-[1fr_auto] gap-2 items-end">
-              ${input('tr-v-' + i, 'Discount', `type="number" inputmode="decimal" min="0" step="0.5" value="${t.value}" data-v="${i}"`)}
-              <div><label class="sr-only" for="tr-type-${i}">${esc(t.name)} discount type</label><select id="tr-type-${i}" class="ad-input" data-type="${i}" style="width:auto"><option value="percent" ${t.type === 'percent' ? 'selected' : ''}>% off</option><option value="amount" ${t.type === 'amount' ? 'selected' : ''}>Ks off</option></select></div>
+              ${input('tr-v-' + i, 'Discount', `type="number" inputmode="decimal" min="0" step="0.5" value="${t.value || ''}" data-v="${i}"`)}
+              <div><label class="sr-only" for="tr-type-${i}">Discount type for ${esc(t.name || 'this tier')}</label><select id="tr-type-${i}" class="ad-input" data-type="${i}" style="width:auto"><option value="percent" ${t.type !== 'amount' ? 'selected' : ''}>% off</option><option value="amount" ${t.type === 'amount' ? 'selected' : ''}>Ks off</option></select></div>
             </div>
-            <p class="text-xs text-on-surface-variant mt-3" data-preview="${i}">${tierText(t)}</p>
-            <p class="text-xs mt-2"><span class="rs-num">${counts[t.name] || 0}</span> customer${counts[t.name] === 1 ? '' : 's'} at this tier now</p>
-          </article>`).join('')}</div>
-          <p class="ad-err mt-3" id="pr-tier-err" hidden></p>
+            <p class="text-xs text-on-surface-variant" data-preview="${i}">${tierText(t)}</p>
+            ${promo.tiers.some((x) => x.name === t.name) ? `<p class="text-xs"><span class="rs-num">${counts[t.name] || 0}</span> customer${counts[t.name] === 1 ? '' : 's'} at this tier now</p>` : ''}
+          </article>`).join('')}
+          ${draftTiers.length < MAX_TIERS ? `<button type="button" class="ad-tier ad-tier-add" id="pr-add-tier"><span class="material-symbols-outlined" aria-hidden="true">add</span>Add tier<span class="text-xs font-normal text-on-surface-variant">${draftTiers.length} of ${MAX_TIERS}</span></button>` : ''}</div>
+          <p class="text-xs text-on-surface-variant mt-3">Up to ${MAX_TIERS} tiers. When you save they're sorted by spend, and each customer gets the highest tier they've reached.</p>
+          <p class="ad-err mt-3" id="pr-tier-err" hidden role="alert"></p>
           <button class="ad-btn dark mt-4" id="pr-save-tiers">Save membership</button>
         </section>
 
@@ -424,31 +432,61 @@
         <section class="ad-sec" aria-labelledby="pr-mem">
           <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
             <div><h2 class="ad-h2" id="pr-mem">Members</h2><p class="text-sm text-on-surface-variant mt-1">Customers by phone number, from orders that are paid, packed, shipped or delivered.</p></div>
-            <div class="ad-chips" role="group" aria-label="Filter members">${['all', ...TIER_ORDER, 'none'].map((k) => `<button class="ad-chip" data-mfilter="${k}" aria-pressed="${state.memberFilter === k}">${k === 'all' ? 'All' : k === 'none' ? 'No tier' : k} <span class="rs-num">${k === 'all' ? members.length : k === 'none' ? members.filter((x) => !x.tier).length : counts[k] || 0}</span></button>`).join('')}</div>
+            <div class="ad-chips" role="group" aria-label="Filter members">${['all', ...tierNames, 'none'].map((k) => `<button class="ad-chip" data-mfilter="${k}" aria-pressed="${state.memberFilter === k}">${k === 'all' ? 'All' : k === 'none' ? 'No tier' : k} <span class="rs-num">${k === 'all' ? members.length : k === 'none' ? members.filter((x) => !x.tier).length : counts[k] || 0}</span></button>`).join('')}</div>
           </div>
           ${shown.length ? `<div class="ad-table-wrap"><table class="ad-table"><thead><tr><th scope="col">Customer</th><th scope="col">Phone</th><th scope="col">Paid orders</th><th scope="col" class="text-right">Total spend</th><th scope="col">Tier</th><th scope="col">Next tier</th></tr></thead>
             <tbody>${shown.map((m) => `<tr><td data-label="Customer"><strong>${esc(m.name)}</strong></td><td data-label="Phone"><a class="underline underline-offset-4" href="tel:${esc(m.phone.replace(/[^\d+]/g, ''))}">${esc(m.phone)}</a></td>
               <td data-label="Paid orders" class="rs-num">${m.orders}</td><td data-label="Total spend" class="text-right rs-num">${fmt(m.spend)}</td>
-              <td data-label="Tier">${m.tier ? `<span class="rs-tier" data-tier="${m.tier}">${m.tier}</span>` : '<span class="text-xs text-on-surface-variant">—</span>'}</td>
+              <td data-label="Tier">${m.tier ? tierBadge(m.tier) : '<span class="text-xs text-on-surface-variant">—</span>'}</td>
               <td data-label="Next tier" class="text-xs">${m.next ? `${esc(m.next.name)} in <span class="rs-num">${fmt(m.next.threshold - m.spend)}</span>` : m.tier ? 'Top tier' : '—'}</td></tr>`).join('')}</tbody></table></div>`
             : emptyHtml('workspace_premium', 'No customers here yet', 'Customers appear once an order of theirs is marked Paid.')}
         </section>`;
 
-      // Tier inputs update the preview as you type; Save validates and stores the lot
-      const readTiers = () => draft.tiers.map((t, i) => ({ name: t.name, threshold: Number($(`[data-th="${i}"]`, main).value) || 0, value: Number($(`[data-v="${i}"]`, main).value) || 0, type: $(`[data-type="${i}"]`, main).value }));
-      $$('#pr-tiers input, #pr-tiers select', main).forEach((el) => el.addEventListener('input', () => readTiers().forEach((t, i) => { $(`[data-preview="${i}"]`, main).innerHTML = tierText(t); })));
+      // Tier cards: edits live in state.tierDraft so adding or removing a tier keeps what was typed
+      const syncDraft = () => draftTiers.forEach((t, i) => {
+        t.name = $(`[data-tn="${i}"]`, main).value.trim();
+        t.threshold = Number($(`[data-th="${i}"]`, main).value) || 0;
+        t.value = Number($(`[data-v="${i}"]`, main).value) || 0;
+        t.type = $(`[data-type="${i}"]`, main).value;
+      });
+      // Callers sync the form into the draft before changing the list, so this only redraws
+      const redraw = (focusSel) => { state.tierOn = $('#pr-on', main).checked; VIEWS_RENDER.promotions(main); bindCommon(main); if (focusSel) $(focusSel, main)?.focus(); };
+      $$('#pr-tiers input, #pr-tiers select', main).forEach((el) => el.addEventListener('input', () => {
+        syncDraft();
+        draftTiers.forEach((t, i) => { $(`[data-preview="${i}"]`, main).innerHTML = tierText(t); $(`[data-badge="${i}"]`, main).textContent = t.name || 'New tier'; });
+      }));
+      $('#pr-on', main).addEventListener('change', (e) => { state.tierOn = e.target.checked; });
+      const addTier = $('#pr-add-tier', main);
+      if (addTier) addTier.addEventListener('click', () => {
+        syncDraft();
+        const last = draftTiers[draftTiers.length - 1];
+        draftTiers.push({ name: '', threshold: last && last.threshold ? last.threshold * 2 : 50000, type: last ? last.type : 'percent', value: last && last.type !== 'amount' ? Math.min(90, (last.value || 0) + 3) : (last ? last.value : 5) });
+        redraw(`[data-tn="${draftTiers.length - 1}"]`);
+      });
+      $$('[data-tdel]', main).forEach((b) => b.addEventListener('click', () => {
+        syncDraft();
+        draftTiers.splice(Number(b.dataset.tdel), 1);
+        redraw('#pr-add-tier');
+      }));
       $('#pr-save-tiers', main).addEventListener('click', (e) => {
-        const tiers = readTiers();
-        const on = tiers.filter((t) => t.threshold > 0 && t.value > 0);
+        syncDraft();
         const err = $('#pr-tier-err', main);
-        let msg = '';
-        for (let i = 1; i < on.length; i++) if (on[i].threshold <= on[i - 1].threshold) msg = on[i].name + ' must need a higher spend than ' + on[i - 1].name + '.';
-        if (tiers.some((t) => t.type === 'percent' && t.value > 90)) msg = 'A % discount can be at most 90%.';
-        if ($('#pr-on', main).checked && !on.length) msg = 'Set a spend and a discount for at least one tier, or switch membership off.';
-        err.hidden = !msg; err.textContent = msg;
-        if (msg) return;
+        // Check every card; each problem shows under its own field
+        let ok = true;
+        const seen = {};
+        draftTiers.forEach((t, i) => {
+          const dup = t.name && seen[t.name.toLowerCase()];
+          if (t.name) seen[t.name.toLowerCase()] = true;
+          ok = fieldError($(`[data-tn="${i}"]`, main), !t.name ? 'Give this tier a name.' : dup ? 'Another tier already has this name.' : '') && ok;
+          ok = fieldError($(`[data-th="${i}"]`, main), !(t.threshold > 0) ? 'Enter the total spend that unlocks it.' : draftTiers.some((o, j) => j !== i && o.threshold === t.threshold) ? 'Each tier needs a different spend.' : '') && ok;
+          ok = fieldError($(`[data-v="${i}"]`, main), !(t.value > 0) ? 'Enter a discount above 0.' : t.type === 'percent' && t.value > 90 ? 'A % discount can be at most 90%.' : '') && ok;
+        });
+        err.hidden = ok; err.textContent = ok ? '' : 'Fix the highlighted fields, then save again.';
+        if (!ok) return $('#pr-tiers [aria-invalid=true]', main).focus();
+        const tiers = draftTiers.map((t) => ({ ...t })).sort((a, b) => a.threshold - b.threshold);
         busy(e.currentTarget, async () => {
           await savePromotions({ ...promo, coupons: promo.coupons || [], membership: $('#pr-on', main).checked, tiers });
+          state.tierDraft = null; state.tierOn = undefined;
           toast(state.promotions.membership ? 'Membership saved and live on the shop' : 'Membership saved (switched off)');
           render();
         });
@@ -490,17 +528,21 @@
       main.innerHTML = header('Enquiries', 'Messages, consultation requests, restock alerts and newsletter sign-ups from the website.', '<button class="ad-btn" data-export-emails><span class="material-symbols-outlined text-[18px]" aria-hidden="true">content_copy</span>Copy newsletter emails</button>') + `
         <div class="ad-toolbar"><div class="ad-chips" role="group" aria-label="Filter enquiries">${[['open', 'Needs reply'], ['all', 'All'], ...types.map((t) => [t, t])].map(([k, l]) => `<button class="ad-chip" data-efilter="${esc(k)}" aria-pressed="${f === k}">${esc(l)}</button>`).join('')}</div></div>
         ${list.length ? `<ul class="ad-list">${list.map((e) => {
-          const isMail = /@/.test(e.contact);
-          return `<li class="ad-enq${e.handled ? ' is-done' : ''}">
+          const isMail = isEmail(e.contact);
+          return `<li class="ad-enq${e.handled ? ' is-done' : ''}" data-enq="${e.row}">
             <span class="material-symbols-outlined ad-enq-ic" aria-hidden="true">${icon[e.type] || 'mail'}</span>
             <div class="min-w-0 flex-1">
-              <p class="text-xs text-on-surface-variant">${esc(e.type)} · ${time(e.date)}</p>
+              <p class="text-xs text-on-surface-variant">${esc(e.type)} · ${time(e.date)}${e.handled ? ' · <span class="ad-enq-done">Replied</span>' : ''}</p>
               <p class="font-semibold text-sm">${esc(e.name || e.contact)}${e.product ? ` <span class="font-normal text-on-surface-variant">— ${esc(e.product)}</span>` : ''}</p>
               ${e.preferredDate || e.service ? `<p class="text-sm">${esc(e.service)}${e.preferredDate ? ' on ' + esc(day(e.preferredDate)) : ''}</p>` : ''}
               ${e.message ? `<p class="text-sm text-on-surface-variant mt-1 whitespace-pre-line">${esc(e.message)}</p>` : ''}
-              <a class="text-xs underline underline-offset-4 mt-2 inline-block py-1" href="${isMail ? 'mailto:' : 'tel:'}${esc(isMail ? e.contact : e.contact.replace(/[^\d+]/g, ''))}">${isMail ? 'Email' : 'Call'} ${esc(e.contact)}</a>
+              <p class="text-xs mt-2 flex items-center gap-1 text-on-surface-variant"><span class="material-symbols-outlined text-[16px]" aria-hidden="true">${isMail ? 'alternate_email' : 'call'}</span>${esc(e.contact)}</p>
+              ${e.reply ? `<div class="ad-enq-reply"><p class="text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant">Reply${e.repliedBy ? ' from ' + esc(e.repliedBy) : ''}${e.repliedAt ? ' · ' + time(e.repliedAt) : ''}${e.repliedVia ? ' · ' + esc(VIA_LABEL[e.repliedVia] || e.repliedVia) : ''}</p><p class="text-sm whitespace-pre-line mt-1">${esc(e.reply)}</p></div>` : ''}
+              ${e.type === 'Newsletter' ? '' : `<div class="ad-enq-actions">
+                <button type="button" class="ad-btn sm dark" data-reply="${e.row}" aria-expanded="false"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">${isMail ? 'forward_to_inbox' : 'sms'}</span>${e.reply ? 'Reply again' : isMail ? 'Reply by email' : 'Reply by phone / Viber'}</button>
+                <label class="ad-toggle"><input type="checkbox" data-handled="${e.row}" ${e.handled ? 'checked' : ''}/><span></span>Mark as replied</label>
+              </div><div class="ad-composer" data-composer="${e.row}" hidden></div>`}
             </div>
-            ${e.type === 'Newsletter' ? '' : `<label class="ad-toggle shrink-0"><input type="checkbox" data-handled="${e.row}" ${e.handled ? 'checked' : ''}/><span></span>Replied</label>`}
           </li>`;
         }).join('')}</ul>` : emptyHtml('inbox', f === 'open' ? 'All caught up' : 'Nothing here', f === 'open' ? 'Every enquiry has a reply.' : 'New enquiries will appear here.')}`;
       $$('[data-efilter]', main).forEach((b) => b.addEventListener('click', () => { state.enquiryFilter = b.dataset.efilter; VIEWS_RENDER.enquiries(main); bindCommon(main); }));
@@ -510,6 +552,13 @@
         try { await api('enquiries.update', { row: e.row, contact: e.contact, handled: box.checked }); e.handled = box.checked; box.closest('.ad-enq').classList.toggle('is-done', e.handled); counts(); }
         catch (err) { box.checked = !box.checked; if (err.message !== 'Signed out') toast(err.message, 'error'); }
         box.disabled = false;
+      }));
+      $$('[data-reply]', main).forEach((b) => b.addEventListener('click', () => {
+        const e = all.find((x) => x.row === Number(b.dataset.reply));
+        const box = $(`[data-composer="${e.row}"]`, main);
+        const open = box.hidden;
+        box.hidden = !open; b.setAttribute('aria-expanded', String(open));
+        if (open) openComposer(main, box, e);
       }));
       $('[data-export-emails]', main).addEventListener('click', async () => {
         const emails = [...new Set(all.filter((e) => e.type === 'Newsletter').map((e) => e.contact))];
@@ -582,8 +631,98 @@
     },
   };
 
+  // ---------------------------------------------------------------- enquiries: reply composer
+  // Email enquiries: send from the shop's Google account (via the Sheet), or open the staff member's own email app.
+  // Phone enquiries: write the message, copy it or open Call / Viber / SMS, then save it as the reply.
+  const VIA_LABEL = { email: 'sent by email', 'email-app': 'sent from email app', phone: 'by phone / SMS', viber: 'by Viber', other: 'other' };
+  const isEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v).trim());
+  // 09xxxxxxxxx (Myanmar) → +959xxxxxxxxx for Viber links; other numbers keep their digits
+  const intlPhone = (v) => { const d = String(v).replace(/[^\d+]/g, ''); return d.startsWith('+') ? d : d.startsWith('09') ? '+95' + d.slice(1) : d; };
+  function replyDraft(e) {
+    const first = (e.name || '').trim().split(/\s+/)[0];
+    const about = e.type === 'Restock alert' && e.product ? `Good news: ${e.product} is back in stock. ` : e.type === 'Consultation request' ? `Thank you for booking a${e.service ? ' ' + e.service.toLowerCase() : ' consultation'}${e.preferredDate ? ' on ' + day(e.preferredDate) : ''}. ` : 'Thank you for getting in touch. ';
+    const subject = e.type === 'Restock alert' && e.product ? `${e.product} is back in stock` : e.type === 'Consultation request' ? 'Your RESTYLE consultation' : 'Re: your RESTYLE enquiry';
+    return { subject, body: `Hi${first ? ' ' + first : ''},\n\n${about}\n\n\nBest wishes,\n${(session.user.name || '').split(' ')[0]}\nRESTYLE` };
+  }
+  function openComposer(main, box, e) {
+    const mail = isEmail(e.contact);
+    const draft = replyDraft(e);
+    const id = 'rp-' + e.row;
+    box.innerHTML = `<form class="grid gap-3" novalidate>
+      ${mail ? `<p class="text-xs text-on-surface-variant">To <strong class="text-on-surface">${esc(e.contact)}</strong></p>
+      <div><label class="ad-label" for="${id}-subj">Subject</label><input id="${id}-subj" class="ad-input" maxlength="150" value="${esc(draft.subject)}"/></div>`
+      : `<p class="text-xs text-on-surface-variant">This customer left a phone number, so the reply goes by phone, SMS or Viber. Write it here, send it with a button below, then save it.</p>`}
+      <div><label class="ad-label" for="${id}-msg">Message</label><textarea id="${id}-msg" rows="7" class="ad-input" maxlength="5000">${esc(draft.body)}</textarea>
+        <p class="ad-help" id="${id}-err" role="alert"></p></div>
+      ${mail ? `<div class="flex flex-wrap gap-2">
+          <button type="submit" class="ad-btn dark"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">send</span>Send email</button>
+          <a class="ad-btn" data-mailto href="#"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">open_in_new</span>Open in my email app</a>
+          <button type="button" class="ad-btn" data-cancel>Cancel</button></div>
+        <p class="ad-help" style="color:rgba(0,0,0,.55)"><strong>Send email</strong> sends it straight away from the shop's Google account (the one that owns the Sheet); the customer's answer arrives in that Gmail inbox. The reply is saved here and the enquiry is marked replied.</p>
+        <div class="ad-note" data-mailto-done hidden><span class="material-symbols-outlined" aria-hidden="true">help</span><span class="flex-1">Sent it from your email app?</span><button type="button" class="ad-btn sm" data-save-via="email-app">Yes, save as replied</button></div>`
+      : `<div class="flex flex-wrap gap-2">
+          <button type="button" class="ad-btn" data-copy><span class="material-symbols-outlined text-[18px]" aria-hidden="true">content_copy</span>Copy message</button>
+          <a class="ad-btn" href="viber://chat?number=${encodeURIComponent(intlPhone(e.contact))}"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">chat</span>Viber</a>
+          <a class="ad-btn" data-sms href="#"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">sms</span>SMS</a>
+          <a class="ad-btn" href="tel:${esc(String(e.contact).replace(/[^\d+]/g, ''))}"><span class="material-symbols-outlined text-[18px]" aria-hidden="true">call</span>Call</a></div>
+        <div class="flex flex-wrap gap-2 items-center"><span class="text-xs font-semibold">Done? Save the reply:</span>
+          <button type="button" class="ad-btn sm dark" data-save-via="viber">Sent by Viber</button>
+          <button type="button" class="ad-btn sm dark" data-save-via="phone">Sent by phone / SMS</button>
+          <button type="button" class="ad-btn sm" data-cancel>Cancel</button></div>`}
+    </form>`;
+    const form = $('form', box);
+    const msg = $(`#${id}-msg`, box);
+    const subj = $(`#${id}-subj`, box);
+    const err = $(`#${id}-err`, box);
+    const close = () => { box.hidden = true; box.innerHTML = ''; const b = $(`[data-reply="${e.row}"]`, main); b.setAttribute('aria-expanded', 'false'); b.focus(); };
+    const text = () => msg.value.trim();
+    const check = () => { const ok = !!text(); err.textContent = ok ? '' : 'Write a reply first'; msg.toggleAttribute('aria-invalid', !ok); if (!ok) msg.focus(); return ok; };
+    msg.addEventListener('input', () => { if (text()) { err.textContent = ''; msg.removeAttribute('aria-invalid'); } });
+    // Cursor on the empty line after the greeting so staff can start typing
+    const at = msg.value.indexOf('\n\n', msg.value.indexOf('\n\n') + 2);
+    msg.focus(); if (at > 0) msg.setSelectionRange(at, at);
+    const save = async (via, btn) => {
+      if (!check()) return;
+      const btns = $$('button, a.ad-btn', box); btns.forEach((x) => { x.disabled = true; x.classList.add('pointer-events-none'); });
+      const label = btn && btn.innerHTML; if (btn) btn.innerHTML = via === 'email' ? 'Sending…' : 'Saving…';
+      try {
+        const r = await api('enquiries.reply', { row: e.row, contact: e.contact, via, subject: subj ? subj.value : '', message: text() });
+        Object.assign(e, { handled: true, reply: text(), repliedBy: r.repliedBy, repliedAt: r.repliedAt, repliedVia: r.repliedVia });
+        toast(via === 'email' ? 'Email sent to ' + e.contact : 'Reply saved');
+        counts(); VIEWS_RENDER.enquiries(main); bindCommon(main);
+      } catch (x) {
+        btns.forEach((y) => { y.disabled = false; y.classList.remove('pointer-events-none'); }); if (btn) btn.innerHTML = label;
+        if (x.message !== 'Signed out') { err.textContent = x.message; toast(x.message, 'error'); }
+      }
+    };
+    form.addEventListener('submit', (ev) => { ev.preventDefault(); save('email', $('[type=submit]', form)); });
+    $$('[data-save-via]', box).forEach((b) => b.addEventListener('click', () => save(b.dataset.saveVia, b)));
+    $$('[data-cancel]', box).forEach((b) => b.addEventListener('click', close));
+    const mailto = $('[data-mailto]', box);
+    if (mailto) mailto.addEventListener('click', (ev) => {
+      if (!check()) return ev.preventDefault();
+      mailto.href = `mailto:${encodeURIComponent(e.contact.trim())}?subject=${encodeURIComponent(subj.value)}&body=${encodeURIComponent(text())}`;
+      $('[data-mailto-done]', box).hidden = false;
+    });
+    const sms = $('[data-sms]', box);
+    if (sms) sms.addEventListener('click', (ev) => {
+      if (!check()) return ev.preventDefault();
+      sms.href = `sms:${String(e.contact).replace(/[^\d+]/g, '')}?body=${encodeURIComponent(text())}`;
+    });
+    const copy = $('[data-copy]', box);
+    if (copy) copy.addEventListener('click', async () => {
+      if (!check()) return;
+      try { await navigator.clipboard.writeText(text()); toast('Message copied — paste it into Viber or SMS'); } catch (x) { toast('Couldn’t copy — your browser blocked it', 'error'); }
+    });
+  }
+
   // ---------------------------------------------------------------- promotions: members, save, bundle editor
-  const TIER_ORDER = ['Silver', 'Gold', 'Platinum'];
+  const MAX_TIERS = 5;
+  // Badge colour follows the tier's rank (lowest spend first), so any name looks right
+  const tierBadge = (name) => {
+    const r = ((state.promotions && state.promotions.tiers) || []).findIndex((t) => t.name === name);
+    return `<span class="rs-tier" data-rank="${r < 0 ? 0 : r}">${esc(name)}</span>`;
+  };
   const SPEND_STATUSES = ['Paid', 'Packed', 'Shipped', 'Delivered'];
   // Same phone matching as the Sheet: digits only, without a leading 95 or 0
   const phoneKey = (p) => String(p || '').replace(/\D/g, '').replace(/^(95|0)+/, '');
@@ -789,7 +928,7 @@
           <p class="flex justify-between"><span>Subtotal</span><span class="rs-num">${fmt(o.subtotal)}</span></p>
           ${o.discountDetails ? o.discountDetails.split('\n').map((l) => `<p class="flex justify-between text-emerald-800"><span>${esc(l.replace(/: −\d+ Ks$/, ''))}</span><span class="rs-num">−${fmt(Number((l.match(/−(\d+) Ks$/) || [0, 0])[1]))}</span></p>`).join('') : ''}
         </div>` : ''}
-        ${o.memberTier && !o.memberDiscount ? `<p class="text-xs text-on-surface-variant mt-2">Customer was <span class="rs-tier" data-tier="${esc(o.memberTier)}">${esc(o.memberTier)}</span> when ordering.</p>` : ''}
+        ${o.memberTier && !o.memberDiscount ? `<p class="text-xs text-on-surface-variant mt-2">Customer was ${tierBadge(o.memberTier)} when ordering.</p>` : ''}
         <p class="flex justify-between font-semibold pt-3 border-t border-black/10 mt-1"><span>Total</span><span class="rs-num">${fmt(o.total)}</span></p>
         ${o.notes ? `<p class="text-sm mt-4 p-3 bg-black/[0.03] rounded"><span class="rs-label mb-1">Customer note</span>${esc(o.notes)}</p>` : ''}
       </section>
@@ -852,6 +991,34 @@
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
 
+  // ---------------------------------------------------------------- colour names → swatch
+  // Fashion colour names first (shop's own shades where it has them), then any CSS colour name.
+  const FASHION_COLOURS = {
+    black: '#000000', white: '#ffffff', ivory: '#efece6', 'off white': '#f4f1ea', cream: '#f3ead8', oatmeal: '#d9ccb4', beige: '#e2d6bf',
+    sand: '#e2ded0', stone: '#a39e93', taupe: '#716b5f', khaki: '#8b7e66', camel: '#b9935a', tan: '#c8a27a', caramel: '#bd9e87',
+    cognac: '#9a4f24', brown: '#6b4a33', mocha: '#7b5e4c', chocolate: '#4b3022', espresso: '#3b2a20',
+    grey: '#888888', gray: '#888888', 'light grey': '#c8c8c8', 'light gray': '#c8c8c8', 'dark grey': '#4a4a4a', 'dark gray': '#4a4a4a',
+    charcoal: '#3a3a3a', graphite: '#3d3d3d', silver: '#c0c0c0',
+    navy: '#1f2a44', 'navy blue': '#1f2a44', blue: '#3b5b8c', 'washed blue': '#6c83a4', denim: '#4f6d8f', indigo: '#2e3a6e',
+    'sky blue': '#8fb4d8', 'light blue': '#a9c4e0', 'baby blue': '#b9d3ee', teal: '#2f6f6f',
+    olive: '#5f6b3a', sage: '#9aa98f', 'khaki green': '#6b6b45', 'forest green': '#2f4b37', 'bottle green': '#1f4a35', emerald: '#1f6b4f', green: '#3e6b48', mint: '#b8d8c4',
+    burgundy: '#6d1f2f', maroon: '#5a1a22', wine: '#6b2234', plum: '#5e2a4a', red: '#b3261e', rust: '#a24a2a', terracotta: '#c0643f',
+    orange: '#d9772b', coral: '#e0735f', peach: '#f0c0a0', mustard: '#c9a227', yellow: '#e8c547', gold: '#c6a15b',
+    pink: '#e7b6c0', 'dusty pink': '#d4a5a5', blush: '#e8c4c0', rose: '#c98a96', lilac: '#b9a6cf', lavender: '#c7b8e0', purple: '#5d3f7a',
+  };
+  const cssCtx = document.createElement('canvas').getContext('2d');
+  const cssColour = (n) => { cssCtx.fillStyle = '#010203'; cssCtx.fillStyle = n; const v = cssCtx.fillStyle; return v !== '#010203' && /^#[0-9a-f]{6}$/.test(v) ? v : null; };
+  // "Washed Navy" → navy, "Light-Blue" → light blue, "#1f3a5f" → itself. Returns null when nothing matches.
+  function colourFromName(name) {
+    const n = String(name || '').toLowerCase().replace(/[-_]/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!n) return null;
+    if (/^#[0-9a-f]{6}$/.test(n)) return n;
+    if (FASHION_COLOURS[n]) return FASHION_COLOURS[n];
+    const words = n.split(' ');
+    for (let k = 1; k < words.length; k++) { const tail = words.slice(k).join(' '); if (FASHION_COLOURS[tail]) return FASHION_COLOURS[tail]; }
+    return cssColour(n.replace(/ /g, '')) || cssColour(words[words.length - 1]);
+  }
+
   // ---------------------------------------------------------------- products: edit / add
   function editProduct(p) {
     const isNew = !p;
@@ -891,14 +1058,41 @@
       </form>`, { label: isNew ? 'Add product' : 'Edit ' + data.name });
 
     // Colour rows: name + colour picker
+    // Colour rows: swatch (picker) + name + colour code. Typing a name matches the swatch to it
+    // until the shade is picked by hand (picker or code), so new colours preview what was typed.
     const colorsBox = $('#pe-colors', box);
+    const swatchHex = (i) => data.colors[i].hex;
+    const showHex = (i) => {
+      $(`#pe-hex-${i}`, box).value = swatchHex(i);
+      $(`#pe-code-${i}`, box).value = swatchHex(i).toUpperCase();
+      $(`#pe-code-${i}`, box).removeAttribute('aria-invalid');
+    };
     const drawColors = () => {
-      colorsBox.innerHTML = data.colors.map((c, i) => `<div class="flex gap-2 items-center">
-        <label class="sr-only" for="pe-hex-${i}">Colour ${i + 1} shade</label><input type="color" id="pe-hex-${i}" value="${esc(c.hex)}" class="ad-swatch" data-hex="${i}"/>
-        <label class="sr-only" for="pe-cname-${i}">Colour ${i + 1} name</label><input id="pe-cname-${i}" class="ad-input flex-1" value="${esc(c.name)}" placeholder="e.g. Charcoal" data-cname="${i}"/>
-        <button type="button" class="ad-icon" data-cdel="${i}" aria-label="Remove colour ${esc(c.name || i + 1)}" ${data.colors.length < 2 ? 'disabled' : ''}><span class="material-symbols-outlined text-[18px]" aria-hidden="true">close</span></button></div>`).join('') + '<p class="ad-help" id="pe-color-msg"></p>';
-      $$('[data-hex]', colorsBox).forEach((el) => el.addEventListener('input', () => { data.colors[el.dataset.hex].hex = el.value; }));
-      $$('[data-cname]', colorsBox).forEach((el) => el.addEventListener('input', () => { data.colors[el.dataset.cname].name = el.value; }));
+      colorsBox.innerHTML = data.colors.map((c, i) => `<div class="ad-colour-row">
+        <label class="sr-only" for="pe-hex-${i}">Colour ${i + 1} shade</label><input type="color" id="pe-hex-${i}" value="${esc(c.hex)}" class="ad-swatch" data-hex="${i}" title="Pick the exact shade"/>
+        <label class="sr-only" for="pe-cname-${i}">Colour ${i + 1} name</label><input id="pe-cname-${i}" class="ad-input flex-1 min-w-0" value="${esc(c.name)}" placeholder="e.g. Navy, Olive, Charcoal" data-cname="${i}" autocomplete="off"/>
+        <label class="sr-only" for="pe-code-${i}">Colour ${i + 1} code</label><input id="pe-code-${i}" class="ad-input ad-colour-code" value="${esc(c.hex.toUpperCase())}" maxlength="7" spellcheck="false" autocomplete="off" data-code="${i}" title="Colour code, e.g. #1F3A5F"/>
+        <button type="button" class="ad-icon" data-cdel="${i}" aria-label="Remove colour ${esc(c.name || i + 1)}" ${data.colors.length < 2 ? 'disabled' : ''}><span class="material-symbols-outlined text-[18px]" aria-hidden="true">close</span></button></div>`).join('')
+        + '<p class="ad-help" style="color:rgba(0,0,0,.55)">Type a colour name and the swatch follows it, or set the exact shade with the swatch or a code like #1F3A5F.</p><p class="ad-help" id="pe-color-msg"></p>';
+      $$('[data-hex]', colorsBox).forEach((el) => el.addEventListener('input', () => {
+        const i = Number(el.dataset.hex);
+        data.colors[i].hex = el.value; data.colors[i].picked = true; showHex(i);
+      }));
+      $$('[data-cname]', colorsBox).forEach((el) => el.addEventListener('input', () => {
+        const i = Number(el.dataset.cname);
+        data.colors[i].name = el.value;
+        const hex = !data.colors[i].picked && colourFromName(el.value);
+        if (hex) { data.colors[i].hex = hex; showHex(i); }
+      }));
+      $$('[data-code]', colorsBox).forEach((el) => {
+        el.addEventListener('input', () => {
+          const i = Number(el.dataset.code);
+          const v = el.value.trim().replace(/^([0-9a-f]{6})$/i, '#$1');
+          if (/^#[0-9a-f]{6}$/i.test(v)) { data.colors[i].hex = v.toLowerCase(); data.colors[i].picked = true; $(`#pe-hex-${i}`, box).value = v.toLowerCase(); el.removeAttribute('aria-invalid'); }
+        });
+        // Leaving the code box tidies it to #RRGGBB, or puts the current shade back if half-typed
+        el.addEventListener('blur', () => showHex(Number(el.dataset.code)));
+      });
       $$('[data-cdel]', colorsBox).forEach((el) => el.addEventListener('click', () => { data.colors.splice(Number(el.dataset.cdel), 1); drawColors(); }));
     };
     drawColors();
